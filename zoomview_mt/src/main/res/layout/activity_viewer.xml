@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.example.xx.zoomview_mt.PullBackLayout
+        android:id="@+id/puller"
+        app:dragDismissDistance="112dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.example.xx.zoomview_mt.QscViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </com.example.xx.zoomview_mt.PullBackLayout>
+</LinearLayout>

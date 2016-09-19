@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <declare-styleable name="NineGridImageView">
+        <attr name="singleImgSize" format="dimension" />
+        <attr name="imgGap" format="dimension" />
+        <attr name="maxSize" format="integer" />
+        <attr name="showStyle" format="enum">
+            <enum name="grid" value="0" />
+            <enum name="fill" value="1" />
+        </attr>
+    </declare-styleable>
+    
+    
+    <declare-styleable name="PullBackLayout">
+        
+        <attr name="dragDismissDistance" format="dimension"/>
+        
+    </declare-styleable>
+</resources>
