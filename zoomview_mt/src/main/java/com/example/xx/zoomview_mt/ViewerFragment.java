@@ -119,12 +119,14 @@ public class ViewerFragment extends Fragment {
     private void initPhotoView() {
         if (mAttacher == null)
             mAttacher = new PhotoViewAttacher(image);
-        mAttacher.setScaleType(ImageView.ScaleType.FIT_CENTER);
         mAttacher.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
             @Override
             public void onViewTap(View view, float x, float y) {
-                if (getActivity() != null)
+                if (getActivity() != null) {
                     getActivity().supportFinishAfterTransition();
+                    mAttacher.cleanup();
+                }
+
             }
         });
     }
@@ -181,7 +183,5 @@ public class ViewerFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mAttacher.cleanup();
-        mAttacher = null;
     }
 }
