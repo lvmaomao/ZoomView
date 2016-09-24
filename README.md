@@ -107,3 +107,5 @@ public boolean onInterceptTouchEvent(MotionEvent ev) {
 
 同时提一下，ViewPager也会出现此问题，处理方法同上。自定义一个ViewPager然后对**onInterceptTouchEvent**进行异常包裹。
 
+功能提取自：**[馒头先生](https://github.com/oxoooo/mr-mantou-android)**
+
