@@ -5,24 +5,11 @@
     android:orientation="vertical">
 
 
-    <ViewSwitcher
-        android:id="@+id/fade"
+    <ImageView
+        android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:inAnimation="@anim/fade_in">
-
-        <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter" />
-
-    </ViewSwitcher>
+        android:scaleType="fitCenter" />
 
 
 </LinearLayout>

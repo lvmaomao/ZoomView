@@ -6,9 +6,9 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.example.xx.zoomview_mt.nineGridView.NineGridImageView;
 import com.example.xx.zoomview_mt.nineGridView.NineGridImageViewAdapter;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +64,10 @@ public class TwoActivity extends ImageFromActivity {
     private NineGridImageViewAdapter<String> mAdapter = new NineGridImageViewAdapter<String>() {
         @Override
         protected void onDisplayImage(Context context, ImageView imageView, String s) {
-            Glide.with(context)
+//            Glide.with(context)
+//                    .load(s)
+//                    .into(imageView);
+            Picasso.with(context)
                     .load(s)
                     .into(imageView);
         }

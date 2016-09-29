@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by xx on 2016/9/11.
@@ -22,9 +22,10 @@ public class OneActivity extends ImageFromActivity {
         setContentView(R.layout.activity_one);
 
         ivShow = (ImageView) findViewById(R.id.ivShow);
-        Glide.with(this)
+        Picasso.with(this)
                 .load(url)
                 .into(ivShow);
+
         ivShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
