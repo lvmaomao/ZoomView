@@ -1,4 +1,4 @@
-package com.example.xx.zoomview_mt;
+package com.yy.www.libs.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by yangyu on 16/9/18.
+ * Created by yangyu on 16/10/8.
  */
-public abstract class ImageFromActivity extends AppCompatActivity {
 
+public abstract class ThumbnailActivity extends AppCompatActivity {
     Bundle transitionState;
 
     @Override
@@ -56,7 +56,7 @@ public abstract class ImageFromActivity extends AppCompatActivity {
      * @param index
      * @return
      */
-    abstract String getBackTransitionName(int index);
+    protected abstract String getBackTransitionName(int index);
 
     /**
      * 设置位移的View
@@ -64,7 +64,7 @@ public abstract class ImageFromActivity extends AppCompatActivity {
      * @param index
      * @return
      */
-    abstract View getBackTransitionView(int index);
+    protected abstract View getBackTransitionView(int index);
 
 
     /**
@@ -75,7 +75,7 @@ public abstract class ImageFromActivity extends AppCompatActivity {
      * @param urlStrings
      * @param index
      */
-    public static void startViewerActivity(Activity activity, View view, ArrayList<String> urlStrings, int index) {
+    public  void startViewerActivity(Activity activity, View view, ArrayList<String> urlStrings, int index) {
 
         Intent intent = new Intent(activity, ViewerActivity.class);
         intent.putExtra("urlStrings", urlStrings);
@@ -100,7 +100,7 @@ public abstract class ImageFromActivity extends AppCompatActivity {
      * @param view
      * @param urlString
      */
-    public static void startViewerActivity(Activity activity, View view, String urlString) {
+    public  void startViewerActivity(Activity activity, View view, String urlString) {
         Intent intent = new Intent(activity, ViewerActivity.class);
         intent.putExtra("urlString", urlString);
 
@@ -115,5 +115,4 @@ public abstract class ImageFromActivity extends AppCompatActivity {
         } else
             activity.startActivity(intent);
     }
-
 }

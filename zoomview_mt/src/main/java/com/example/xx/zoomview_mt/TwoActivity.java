@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import com.example.xx.zoomview_mt.nineGridView.NineGridImageView;
 import com.example.xx.zoomview_mt.nineGridView.NineGridImageViewAdapter;
 import com.squareup.picasso.Picasso;
+import com.yy.www.libs.view.ThumbnailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * Created by yangyu on 16/9/13.
  */
-public class TwoActivity extends ImageFromActivity {
+public class TwoActivity extends ThumbnailActivity {
 
     NineGridImageView nineGridImageView;
 
@@ -50,15 +51,14 @@ public class TwoActivity extends ImageFromActivity {
     }
 
     @Override
-    String getBackTransitionName(int index) {
+    protected String getBackTransitionName(int index) {
         return IMG_URL_LIST.get(index);
     }
 
     @Override
-    View getBackTransitionView(int index) {
+    protected View getBackTransitionView(int index) {
         return nineGridImageView.getImageView(index);
     }
-
 
 
     private NineGridImageViewAdapter<String> mAdapter = new NineGridImageViewAdapter<String>() {

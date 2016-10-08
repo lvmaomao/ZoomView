@@ -1,4 +1,4 @@
-package com.example.xx.zoomview_mt;
+package com.yy.www.libs.view;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.yy.www.libs.R;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 

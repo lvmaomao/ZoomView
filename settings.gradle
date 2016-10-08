@@ -1,1 +1,1 @@
-include ':zoomview_mt'
+include ':zoomview_mt', ':libs'

@@ -5,16 +5,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <com.example.xx.zoomview_mt.PullBackLayout
+    <com.yy.www.libs.widget.PullBackLayout
         android:id="@+id/puller"
         app:dragDismissDistance="112dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.example.xx.zoomview_mt.QscViewPager
+        <com.yy.www.libs.widget.QscViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </com.example.xx.zoomview_mt.PullBackLayout>
+    </com.yy.www.libs.widget.PullBackLayout>
 </LinearLayout>

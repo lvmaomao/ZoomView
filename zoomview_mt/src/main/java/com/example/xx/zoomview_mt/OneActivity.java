@@ -6,11 +6,12 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.yy.www.libs.view.ThumbnailActivity;
 
 /**
  * Created by xx on 2016/9/11.
  */
-public class OneActivity extends ImageFromActivity {
+public class OneActivity extends ThumbnailActivity {
 
     ImageView ivShow;
     String url = "http://img.bimg.126.net/photo/K2y0zX93ZxNz84KkysxCfA==/301741175050608631.jpg";
@@ -35,12 +36,12 @@ public class OneActivity extends ImageFromActivity {
     }
 
     @Override
-    String getBackTransitionName(int index) {
+    protected String getBackTransitionName(int index) {
         return url;
     }
 
     @Override
-    View getBackTransitionView(int index) {
+    protected View getBackTransitionView(int index) {
         return ivShow;
     }
 

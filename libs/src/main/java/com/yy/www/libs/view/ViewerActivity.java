@@ -1,4 +1,4 @@
-package com.example.xx.zoomview_mt;
+package com.yy.www.libs.view;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -12,6 +12,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import com.yy.www.libs.R;
+import com.yy.www.libs.widget.PullBackLayout;
+import com.yy.www.libs.widget.QscViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
