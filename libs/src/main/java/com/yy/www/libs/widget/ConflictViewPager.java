@@ -8,14 +8,14 @@ import android.view.MotionEvent;
 /**
  * 避免与PhotoView出现冲突
  */
-public class QscViewPager extends ViewPager {
+public class ConflictViewPager extends ViewPager {
 
 
-    public QscViewPager(Context context) {
+    public ConflictViewPager(Context context) {
         super(context);
     }
 
-    public QscViewPager(Context context, AttributeSet attrs) {
+    public ConflictViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 

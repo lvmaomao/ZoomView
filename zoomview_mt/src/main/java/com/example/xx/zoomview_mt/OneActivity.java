@@ -2,17 +2,18 @@ package com.example.xx.zoomview_mt;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.yy.www.libs.view.ThumbnailActivity;
+import com.yy.www.libs.TransitionSingleHelper;
 
 /**
  * Created by xx on 2016/9/11.
  */
-public class OneActivity extends ThumbnailActivity {
-
+public class OneActivity extends AppCompatActivity {
+    TransitionSingleHelper t;
     ImageView ivShow;
     String url = "http://img.bimg.126.net/photo/K2y0zX93ZxNz84KkysxCfA==/301741175050608631.jpg";
 
@@ -27,22 +28,16 @@ public class OneActivity extends ThumbnailActivity {
                 .load(url)
                 .into(ivShow);
 
+        t = new TransitionSingleHelper();
+        setExitSharedElementCallback(t.sharedElementCallback);
+
+
         ivShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startViewerActivity(OneActivity.this, v, url);
+                t.startViewerActivity(OneActivity.this, v, url);
             }
         });
-    }
-
-    @Override
-    protected String getBackTransitionName(int index) {
-        return url;
-    }
-
-    @Override
-    protected View getBackTransitionView(int index) {
-        return ivShow;
     }
 
 
