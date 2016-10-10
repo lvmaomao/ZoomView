@@ -12,9 +12,5 @@
     </declare-styleable>
     
     
-    <declare-styleable name="PullBackLayout">
-        
-        <attr name="dragDismissDistance" format="dimension"/>
-        
-    </declare-styleable>
+
 </resources>

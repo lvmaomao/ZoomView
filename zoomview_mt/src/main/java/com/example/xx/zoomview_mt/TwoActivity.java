@@ -1,14 +1,17 @@
 package com.example.xx.zoomview_mt;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.example.xx.zoomview_mt.nineGridView.NineGridImageView;
 import com.example.xx.zoomview_mt.nineGridView.NineGridImageViewAdapter;
+import com.squareup.picasso.Picasso;
+import com.yy.www.libs.TransitionMultiHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +19,10 @@ import java.util.List;
 /**
  * Created by yangyu on 16/9/13.
  */
-public class TwoActivity extends ImageFromActivity {
+public class TwoActivity extends AppCompatActivity {
+    private TransitionMultiHelper helper;
 
-    NineGridImageView nineGridImageView;
+    private NineGridImageView nineGridImageView;
 
     private List<String> IMG_URL_LIST = new ArrayList<>();
 
@@ -28,6 +32,13 @@ public class TwoActivity extends ImageFromActivity {
         setContentView(R.layout.activity_two);
         initDatas();
         initView();
+        initHelper();
+    }
+
+    private void initHelper() {
+        helper = new TransitionMultiHelper();
+        setExitSharedElementCallback(helper.sharedElementCallback);
+
     }
 
     private void initView() {
@@ -49,22 +60,28 @@ public class TwoActivity extends ImageFromActivity {
         IMG_URL_LIST.add("http://img5.duitang.com/uploads/item/201407/27/20140727202737_sZLAX.jpeg");
     }
 
-    @Override
-    String getBackTransitionName(int index) {
-        return IMG_URL_LIST.get(index);
-    }
 
     @Override
-    View getBackTransitionView(int index) {
-        return nineGridImageView.getImageView(index);
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+        helper.update(data, new TransitionMultiHelper.UpdateTransitionListener() {
+            @Override
+            public View updateView(int position) {
+                return nineGridImageView.getImageView(position);
+            }
+
+            @Override
+            public String updateName(int position) {
+                return IMG_URL_LIST.get(position);
+
+            }
+        });
     }
-
-
 
     private NineGridImageViewAdapter<String> mAdapter = new NineGridImageViewAdapter<String>() {
         @Override
         protected void onDisplayImage(Context context, ImageView imageView, String s) {
-            Glide.with(context)
+            Picasso.with(context)
                     .load(s)
                     .into(imageView);
         }
@@ -76,7 +93,8 @@ public class TwoActivity extends ImageFromActivity {
 
         @Override
         protected void onItemImageClick(Context context, View v, int index, List<String> list) {
-            startViewerActivity(TwoActivity.this, v, (ArrayList<String>) IMG_URL_LIST, index);
+            helper.startViewerActivity(TwoActivity.this, v, (ArrayList<String>) IMG_URL_LIST, index);
+
         }
     };
 

@@ -1,4 +1,4 @@
-package com.example.xx.zoomview_mt;
+package com.yy.www.libs.view;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -13,6 +13,10 @@ import android.support.v4.app.SharedElementCallback;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.yy.www.libs.R;
+import com.yy.www.libs.widget.PullBackLayout;
+import com.yy.www.libs.widget.ConflictViewPager;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +24,7 @@ import java.util.Map;
 /**
  * 图片展示Activity
  */
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class ViewerActivity extends AppCompatActivity implements PullBackLayout.Callback {
 
     /**
@@ -30,7 +35,7 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
     /**
      * 针对ViewDragHelper手势冲突处理
      */
-    private QscViewPager pager;
+    private ConflictViewPager pager;
 
     /**
      * viewPager adapter
@@ -46,30 +51,19 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
 
     private int mIndex;
 
-
     public ViewerFragment getCurrent() {
         return (ViewerFragment) adapter.instantiateItem(pager, pager.getCurrentItem());
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_viewer);
 
-        pager = (QscViewPager) findViewById(R.id.pager);
-
-        puller = (PullBackLayout) findViewById(R.id.puller);
-        puller.setCallback(this);
-
-        int mIndex = getIntentData();
-
-        background = new ColorDrawable(Color.BLACK);
-        puller.setBackground(background);
-
-        adapter = new Adapter();
-        pager.setAdapter(adapter);
-        pager.setCurrentItem(mIndex);
+        initView();
+        getIntentData();
+        initPuller();
+        initAdapter(mIndex);
         setEnterSharedElementCallback(new SharedElementCallback() {
             @Override
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
@@ -80,23 +74,32 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
                 }
             }
         });
-
-
     }
 
-    private int getIntentData() {
-        int mIndex = getIntent().getIntExtra("index", -1);
-        if (mIndex == -1) {
-            mUrlStrings.add(getIntent().getStringExtra("urlString"));
-        } else {
-            mUrlStrings.addAll(getIntent().getStringArrayListExtra("urlStrings"));
-        }
+    private void initView() {
+        pager = (ConflictViewPager) findViewById(R.id.pager);
+        puller = (PullBackLayout) findViewById(R.id.puller);
+    }
 
+    private void getIntentData() {
+        //如果是single 位置为0
+        mIndex = getIntent().getIntExtra("index", 0);
+        mUrlStrings.addAll(getIntent().getStringArrayListExtra("urlStrings"));
         if (mUrlStrings == null || mUrlStrings.size() < 1)
             throw new NullPointerException("Please use the startViewerActivity for intent ViewerActivity");
-        return mIndex;
     }
 
+    private void initPuller() {
+        background = new ColorDrawable(Color.BLACK);
+        puller.setCallback(this);
+        puller.setBackground(background);
+    }
+
+    private void initAdapter(int mIndex) {
+        adapter = new Adapter();
+        pager.setAdapter(adapter);
+        pager.setCurrentItem(mIndex);
+    }
 
     @Override
     public void onPullStart() {
@@ -161,7 +164,6 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
         }
 
     }
-
 
     @Override
     protected void onDestroy() {

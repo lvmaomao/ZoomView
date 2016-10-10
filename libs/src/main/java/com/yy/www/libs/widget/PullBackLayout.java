@@ -3,7 +3,7 @@
 // (powered by Fernflower decompiler)
 //
 
-package com.example.xx.zoomview_mt;
+package com.yy.www.libs.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -16,6 +16,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.yy.www.libs.R;
+
+/**
+ * 下拉关闭
+ */
 public class PullBackLayout extends FrameLayout {
     private final ViewDragHelper dragger;
     private final int dragDismissDistance;
@@ -52,7 +57,10 @@ public class PullBackLayout extends FrameLayout {
     }
 
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        this.dragger.processTouchEvent(event);
+        try {
+            this.dragger.processTouchEvent(event);
+        } catch (Exception e) {
+        }
         return true;
     }
 
