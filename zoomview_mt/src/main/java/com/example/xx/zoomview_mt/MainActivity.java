@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.xx.zoomview_mt.fragment.ThirdActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -25,6 +27,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, TwoActivity.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.btnThird).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ThirdActivity.class);
                 startActivity(intent);
             }
         });

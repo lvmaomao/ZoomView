@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import com.example.xx.zoomview_mt.nineGridView.NineGridImageView;
 import com.example.xx.zoomview_mt.nineGridView.NineGridImageViewAdapter;
 import com.squareup.picasso.Picasso;
-import com.yy.www.libs.TransitionMultiHelper;
+import com.yy.www.libs.TransitionActivityMultiHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  * Created by yangyu on 16/9/13.
  */
 public class TwoActivity extends AppCompatActivity {
-    private TransitionMultiHelper helper;
+    private TransitionActivityMultiHelper helper;
 
     private NineGridImageView nineGridImageView;
 
@@ -36,7 +36,7 @@ public class TwoActivity extends AppCompatActivity {
     }
 
     private void initHelper() {
-        helper = new TransitionMultiHelper();
+        helper = new TransitionActivityMultiHelper();
         setExitSharedElementCallback(helper.sharedElementCallback);
 
     }
@@ -64,7 +64,7 @@ public class TwoActivity extends AppCompatActivity {
     @Override
     public void onActivityReenter(int resultCode, Intent data) {
         super.onActivityReenter(resultCode, data);
-        helper.update(data, new TransitionMultiHelper.UpdateTransitionListener() {
+        helper.update(data, new TransitionActivityMultiHelper.UpdateTransitionListener() {
             @Override
             public View updateView(int position) {
                 return nineGridImageView.getImageView(position);
@@ -77,6 +77,8 @@ public class TwoActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private NineGridImageViewAdapter<String> mAdapter = new NineGridImageViewAdapter<String>() {
         @Override

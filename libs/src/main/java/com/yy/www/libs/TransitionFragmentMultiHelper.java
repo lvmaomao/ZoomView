@@ -18,7 +18,7 @@ import java.util.Map;
  * Created by yangyu on 16/10/9.
  */
 
-public class TransitionMultiHelper {
+public class TransitionFragmentMultiHelper {
 
     private ArrayList<String> transitionNames;
 
@@ -47,6 +47,12 @@ public class TransitionMultiHelper {
     public void update(Intent intent, UpdateTransitionListener listener) {
         transitionState = new Bundle(intent.getExtras());
         int index = transitionState.getInt("index", 0);
+        transitionName = listener.updateName(index);
+        transitionView = listener.updateView(index);
+    }
+
+    public void update(int position, UpdateTransitionListener listener) {
+        int index = position;
         transitionName = listener.updateName(index);
         transitionView = listener.updateView(index);
     }
@@ -94,6 +100,6 @@ public class TransitionMultiHelper {
         String updateName(int position);
     }
 
-    UpdateTransitionListener listener;
+    private UpdateTransitionListener listener;
 
 }

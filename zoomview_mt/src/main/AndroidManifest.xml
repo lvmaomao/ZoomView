@@ -21,6 +21,7 @@
 
         <activity android:name=".OneActivity" />
         <activity android:name=".TwoActivity" />
+        <activity android:name=".fragment.ThirdActivity" />
         <activity android:name="com.yy.www.libs.view.ViewerActivity"
             android:theme="@style/AppTheme.Transparent"/>
     </application>

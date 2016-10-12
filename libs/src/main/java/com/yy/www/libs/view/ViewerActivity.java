@@ -14,8 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.yy.www.libs.R;
-import com.yy.www.libs.widget.PullBackLayout;
+import com.yy.www.libs.manager.EventManager;
 import com.yy.www.libs.widget.ConflictViewPager;
+import com.yy.www.libs.widget.PullBackLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,6 +137,7 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
         Intent data = new Intent();
         data.putExtra("index", pager.getCurrentItem());
         setResult(RESULT_OK, data);
+        EventManager.raiseEvent(pager.getCurrentItem());
         super.supportFinishAfterTransition();
     }
 
