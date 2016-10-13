@@ -12,14 +12,16 @@ import com.example.xx.zoomview_mt.R;
  */
 
 public class ThirdActivity extends AppCompatActivity {
+    TestFragment testFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_third);
 
+        testFragment = TestFragment.getInstance();
         FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().add(R.id.llContent, new TestFragment()).commit();
-
+        manager.beginTransaction().add(R.id.llContent, testFragment).commit();
     }
+
 }

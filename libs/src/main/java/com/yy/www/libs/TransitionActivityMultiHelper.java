@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.yy.www.libs.Constant.PARAMS_RETURNINDEX;
+import static com.yy.www.libs.Constant.PARAMS_TRANSITIONINDEX;
+import static com.yy.www.libs.Constant.PARAMS_TRANSITIONNAMES;
+
 /**
  * Created by yangyu on 16/10/9.
  */
@@ -46,7 +50,7 @@ public class TransitionActivityMultiHelper {
 
     public void update(Intent intent, UpdateTransitionListener listener) {
         transitionState = new Bundle(intent.getExtras());
-        int index = transitionState.getInt("index", 0);
+        int index = transitionState.getInt(PARAMS_RETURNINDEX, 0);
         transitionName = listener.updateName(index);
         transitionView = listener.updateView(index);
     }
@@ -72,8 +76,8 @@ public class TransitionActivityMultiHelper {
         transitionNames.addAll(urlStrings);
 
         Intent intent = new Intent(activity, ViewerActivity.class);
-        intent.putExtra("urlStrings", urlStrings);
-        intent.putExtra("index", position);
+        intent.putExtra(PARAMS_TRANSITIONNAMES, urlStrings);
+        intent.putExtra(PARAMS_TRANSITIONINDEX, position);
 
         ActivityOptionsCompat optionsCompat;
 

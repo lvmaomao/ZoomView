@@ -19,7 +19,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder> {
 
     private Context mContext;
 
-    private LayoutInflater inflater;
+    public LayoutInflater inflater;
 
     private List<String> IMG_URL_LIST;
 
@@ -55,7 +55,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView ivImg;
+        public ImageView ivImg;
 
         public ViewHolder(View itemView) {
             super(itemView);

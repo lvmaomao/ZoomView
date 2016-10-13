@@ -13,14 +13,19 @@ import android.support.v4.app.SharedElementCallback;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.yy.www.libs.Constant;
 import com.yy.www.libs.R;
-import com.yy.www.libs.manager.EventManager;
 import com.yy.www.libs.widget.ConflictViewPager;
 import com.yy.www.libs.widget.PullBackLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static com.yy.www.libs.Constant.PARAMS_OVER_TARGET;
+import static com.yy.www.libs.Constant.PARAMS_RETURNINDEX;
+import static com.yy.www.libs.Constant.PARAMS_TRANSITIONINDEX;
+import static com.yy.www.libs.Constant.PARAMS_TRANSITIONNAMES;
 
 /**
  * 图片展示Activity
@@ -52,9 +57,19 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
 
     private int mIndex;
 
+    /**
+     * 关闭方法
+     */
+    private int target;
+
     public ViewerFragment getCurrent() {
         return (ViewerFragment) adapter.instantiateItem(pager, pager.getCurrentItem());
     }
+
+    public ViewerFragment getFirst() {
+        return (ViewerFragment) adapter.instantiateItem(pager, mIndex);
+    }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,9 +84,8 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
             @Override
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
                 if (mUrlStrings != null && mUrlStrings.size() > 0) {
-                    String url = mUrlStrings.get(pager.getCurrentItem());
                     sharedElements.clear();
-                    sharedElements.put(url, getCurrent().getSharedElement());
+                    sharedElements.put(mUrlStrings.get(pager.getCurrentItem()), getCurrent().getSharedElement());
                 }
             }
         });
@@ -82,10 +96,13 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
         puller = (PullBackLayout) findViewById(R.id.puller);
     }
 
+
     private void getIntentData() {
         //如果是single 位置为0
-        mIndex = getIntent().getIntExtra("index", 0);
-        mUrlStrings.addAll(getIntent().getStringArrayListExtra("urlStrings"));
+        mIndex = getIntent().getIntExtra(PARAMS_TRANSITIONINDEX, 0);
+        target = getIntent().getIntExtra(PARAMS_OVER_TARGET, 0);
+        mUrlStrings.addAll(getIntent().getStringArrayListExtra(PARAMS_TRANSITIONNAMES));
+
         if (mUrlStrings == null || mUrlStrings.size() < 1)
             throw new NullPointerException("Please use the startViewerActivity for intent ViewerActivity");
     }
@@ -120,13 +137,13 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
 
     @Override
     public void onPullComplete() {
-        supportFinishAfterTransition();
+        closeAct();
     }
 
 
     @Override
     public void onBackPressed() {
-        supportFinishAfterTransition();
+        closeAct();
     }
 
     /**
@@ -135,9 +152,8 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
     @Override
     public void supportFinishAfterTransition() {
         Intent data = new Intent();
-        data.putExtra("index", pager.getCurrentItem());
+        data.putExtra(PARAMS_RETURNINDEX, pager.getCurrentItem());
         setResult(RESULT_OK, data);
-        EventManager.raiseEvent(pager.getCurrentItem());
         super.supportFinishAfterTransition();
     }
 
@@ -164,7 +180,6 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
         public int getCount() {
             return mUrlStrings.size();
         }
-
     }
 
     @Override
@@ -172,6 +187,14 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
         super.onDestroy();
         if (mUrlStrings != null) {
             mUrlStrings.clear();
+        }
+    }
+
+    public void closeAct() {
+        if (target == Constant.Target.TARGET_SKIP) {
+            finish();
+        } else {
+            supportFinishAfterTransition();
         }
     }
 }

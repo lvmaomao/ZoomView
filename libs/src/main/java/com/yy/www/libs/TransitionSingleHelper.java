@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.yy.www.libs.Constant.PARAMS_TRANSITIONNAMES;
+
 /**
  * 针对单个ImageView 的位移
  */
@@ -49,13 +51,12 @@ public class TransitionSingleHelper {
     };
 
 
-
     /**
      * single Image
      *
      * @param activity
      */
-    public void startViewerActivity(Activity activity,View view,String urlString) {
+    public void startViewerActivity(Activity activity, View view, String urlString) {
         this.transitionView = view;
         this.transitionName = urlString;
         if (transitionNames == null) {
@@ -65,7 +66,7 @@ public class TransitionSingleHelper {
         }
         transitionNames.add(urlString);
         Intent intent = new Intent(activity, ViewerActivity.class);
-        intent.putExtra("urlStrings", transitionNames);
+        intent.putExtra(PARAMS_TRANSITIONNAMES, transitionNames);
         ActivityOptionsCompat optionsCompat;
 
         if (Build.VERSION.SDK_INT >= 16) {

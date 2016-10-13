@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 
 import com.example.xx.zoomview_mt.R;
 import com.yy.www.libs.TransitionFragmentMultiHelper;
-import com.yy.www.libs.manager.Event;
-import com.yy.www.libs.manager.EventManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,23 +20,28 @@ import java.util.List;
  */
 public class TestFragment extends Fragment implements TestAdapter.onImageViewClickListener {
 
-    TransitionFragmentMultiHelper helper;
+
     LinearLayoutManager manager;
 
     RecyclerView rvImage;
 
     List<String> urls;
 
+    TransitionFragmentMultiHelper helper;
+
+    public static TestFragment getInstance() {
+
+        return new TestFragment();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test, container, false);
         rvImage = (RecyclerView) view.findViewById(R.id.rvImage);
+        helper = new TransitionFragmentMultiHelper();
         initDummy();
         initRv();
-        helper = new TransitionFragmentMultiHelper();
-        setExitSharedElementCallback(helper.sharedElementCallback);
-        EventManager.setEventListener(event);
         return view;
     }
 
@@ -66,24 +69,6 @@ public class TestFragment extends Fragment implements TestAdapter.onImageViewCli
     public void onImageClick(View v, int position) {
         helper.startViewerActivity(getActivity(), v, (ArrayList<String>) urls, position);
     }
-
-    private Event event = new Event() {
-        @Override
-        public void onSomethingHappened(int postion) {
-            helper.update(postion, new TransitionFragmentMultiHelper.UpdateTransitionListener() {
-                @Override
-                public View updateView(int position) {
-                    View view = manager.findViewByPosition(position).findViewById(R.id.ivImg);
-                    return view;
-                }
-
-                @Override
-                public String updateName(int position) {
-                    return urls.get(position);
-                }
-            });
-        }
-    };
 
 
 }

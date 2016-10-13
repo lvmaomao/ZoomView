@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.yy.www.libs.R;
 
@@ -84,7 +85,7 @@ public class ViewerFragment extends Fragment {
             @Override
             public void onViewTap(View view, float x, float y) {
                 if (getActivity() != null)
-                    getActivity().supportFinishAfterTransition();
+                    ((ViewerActivity) getActivity()).closeAct();
             }
         });
     }
@@ -95,8 +96,17 @@ public class ViewerFragment extends Fragment {
     private void loadFullImage() {
         Picasso.with(getActivity())
                 .load(url)
-                .into(image);
-        initPhotoView();
+                .into(image, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        initPhotoView();
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
 
 
     }
@@ -104,7 +114,10 @@ public class ViewerFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mAttacher.cleanup();
-        mAttacher = null;
+        if (mAttacher != null) {
+            mAttacher.cleanup();
+            mAttacher = null;
+        }
+
     }
 }
