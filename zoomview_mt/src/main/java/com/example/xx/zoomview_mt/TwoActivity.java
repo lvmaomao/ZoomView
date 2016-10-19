@@ -1,17 +1,19 @@
 package com.example.xx.zoomview_mt;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.xx.zoomview_mt.nineGridView.NineGridImageView;
-import com.example.xx.zoomview_mt.nineGridView.NineGridImageViewAdapter;
 import com.squareup.picasso.Picasso;
-import com.yy.www.libs.TransitionActivityMultiHelper;
+import com.yy.www.libs.TransitionManager;
+import com.yy.www.libs.helper.TransitionMultiHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +22,11 @@ import java.util.List;
  * Created by yangyu on 16/9/13.
  */
 public class TwoActivity extends AppCompatActivity {
-    private TransitionActivityMultiHelper helper;
+    private TransitionMultiHelper helper;
 
-    private NineGridImageView nineGridImageView;
+    private RecyclerView recyclerView;
+    private GridLayoutManager manager;
+
 
     private List<String> IMG_URL_LIST = new ArrayList<>();
 
@@ -36,15 +40,18 @@ public class TwoActivity extends AppCompatActivity {
     }
 
     private void initHelper() {
-        helper = new TransitionActivityMultiHelper();
+        helper = new TransitionManager(TwoActivity.this).getMulti();
         setExitSharedElementCallback(helper.sharedElementCallback);
 
     }
 
     private void initView() {
-        nineGridImageView = (NineGridImageView) findViewById(R.id.nineGridImageView);
-        nineGridImageView.setAdapter(mAdapter);
-        nineGridImageView.setImagesData(IMG_URL_LIST);
+        recyclerView = (RecyclerView) findViewById(R.id.nineGridImageView);
+        manager = new GridLayoutManager(this, 2);
+        recyclerView.setLayoutManager(manager);
+        recyclerView.setAdapter(new ImageAdapter());
+
+
     }
 
     private void initDatas() {
@@ -64,10 +71,16 @@ public class TwoActivity extends AppCompatActivity {
     @Override
     public void onActivityReenter(int resultCode, Intent data) {
         super.onActivityReenter(resultCode, data);
-        helper.update(data, new TransitionActivityMultiHelper.UpdateTransitionListener() {
+        helper.update(data, new TransitionMultiHelper.UpdateTransitionListener() {
             @Override
             public View updateView(int position) {
-                return nineGridImageView.getImageView(position);
+//                recyclerView.scrollToPosition(position);
+                ImageAdapter.ViewHolder vh = (ImageAdapter.ViewHolder) recyclerView.findViewHolderForLayoutPosition(amendPosition(position));
+                if (vh != null) {
+                    return vh.itemView.findViewById(R.id.ivImg);
+                } else {
+                    return null;
+                }
             }
 
             @Override
@@ -78,26 +91,47 @@ public class TwoActivity extends AppCompatActivity {
         });
     }
 
+    int amendPosition(int previewPosition) {
+        return Math.min(previewPosition, manager.findLastVisibleItemPosition());
+    }
 
 
-    private NineGridImageViewAdapter<String> mAdapter = new NineGridImageViewAdapter<String>() {
+    private class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
+
+
         @Override
-        protected void onDisplayImage(Context context, ImageView imageView, String s) {
-            Picasso.with(context)
-                    .load(s)
-                    .into(imageView);
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(TwoActivity.this).inflate(R.layout.item_image, parent, false);
+            ViewHolder viewHolder = new ViewHolder(view);
+            return viewHolder;
         }
 
         @Override
-        protected ImageView generateImageView(Context context) {
-            return super.generateImageView(context);
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            Picasso.with(TwoActivity.this)
+                    .load(IMG_URL_LIST.get(position))
+                    .into(holder.ivImg);
         }
 
         @Override
-        protected void onItemImageClick(Context context, View v, int index, List<String> list) {
-            helper.startViewerActivity(TwoActivity.this, v, (ArrayList<String>) IMG_URL_LIST, index);
-
+        public int getItemCount() {
+            return IMG_URL_LIST.size();
         }
-    };
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public ImageView ivImg;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                ivImg = (ImageView) itemView.findViewById(R.id.ivImg);
+                ivImg.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        helper.startViewerActivity(v, (ArrayList<String>) IMG_URL_LIST, getAdapterPosition());
+                    }
+                });
+            }
+        }
+    }
 
 }

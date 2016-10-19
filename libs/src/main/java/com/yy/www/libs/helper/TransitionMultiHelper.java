@@ -1,4 +1,4 @@
-package com.yy.www.libs;
+package com.yy.www.libs.helper;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -22,7 +22,7 @@ import static com.yy.www.libs.Constant.PARAMS_TRANSITIONNAMES;
  * Created by yangyu on 16/10/9.
  */
 
-public class TransitionActivityMultiHelper {
+public class TransitionMultiHelper {
 
     private ArrayList<String> transitionNames;
 
@@ -32,6 +32,11 @@ public class TransitionActivityMultiHelper {
 
     private View transitionView;
 
+    private Activity mContext;
+
+    public TransitionMultiHelper(Activity activity) {
+        this.mContext = activity;
+    }
 
     public SharedElementCallback sharedElementCallback = new SharedElementCallback() {
         @Override
@@ -49,25 +54,25 @@ public class TransitionActivityMultiHelper {
     };
 
     public void update(Intent intent, UpdateTransitionListener listener) {
+
         transitionState = new Bundle(intent.getExtras());
-        int index = transitionState.getInt(PARAMS_RETURNINDEX, 0);
-        transitionName = listener.updateName(index);
-        transitionView = listener.updateView(index);
+        int position = transitionState.getInt(PARAMS_RETURNINDEX, 0);
+        transitionName = listener.updateName(position);
+        if (listener.updateView(position) != null)
+            transitionView = listener.updateView(position);
     }
 
 
     /**
      * multi Image
      *
-     * @param activity
-     * @param view       位移的view
      * @param urlStrings 位移的描述
      * @param position   点击的位置
      */
-    public void startViewerActivity(Activity activity, View view, ArrayList<String> urlStrings, int position) {
-
-        this.transitionView = view;
+    public void startViewerActivity(View clickView, ArrayList<String> urlStrings, int position) {
+        this.transitionView = clickView;
         this.transitionName = urlStrings.get(position);
+
         if (transitionNames == null) {
             transitionNames = new ArrayList<>();
         } else {
@@ -75,20 +80,20 @@ public class TransitionActivityMultiHelper {
         }
         transitionNames.addAll(urlStrings);
 
-        Intent intent = new Intent(activity, ViewerActivity.class);
+        Intent intent = new Intent(mContext, ViewerActivity.class);
         intent.putExtra(PARAMS_TRANSITIONNAMES, urlStrings);
         intent.putExtra(PARAMS_TRANSITIONINDEX, position);
 
         ActivityOptionsCompat optionsCompat;
 
         if (Build.VERSION.SDK_INT >= 16) {
-            optionsCompat = ActivityOptionsCompat.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
+            optionsCompat = ActivityOptionsCompat.makeScaleUpAnimation(transitionView, 0, 0, transitionView.getWidth(), transitionView.getHeight());
             if (Build.VERSION.SDK_INT >= 21) {
-                optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, view, urlStrings.get(position));
+                optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, transitionView, urlStrings.get(position));
             }
-            activity.startActivity(intent, optionsCompat.toBundle());
+            mContext.startActivity(intent, optionsCompat.toBundle());
         } else
-            activity.startActivity(intent);
+            mContext.startActivity(intent);
     }
 
 
@@ -97,7 +102,5 @@ public class TransitionActivityMultiHelper {
 
         String updateName(int position);
     }
-
-    UpdateTransitionListener listener;
 
 }

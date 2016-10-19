@@ -7,7 +7,8 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.yy.www.libs.TransitionSingleHelper;
+import com.yy.www.libs.TransitionManager;
+import com.yy.www.libs.helper.TransitionSingleHelper;
 
 /**
  * Created by xx on 2016/9/11.
@@ -28,14 +29,13 @@ public class OneActivity extends AppCompatActivity {
                 .load(url)
                 .into(ivShow);
 
-        t = new TransitionSingleHelper();
-        setExitSharedElementCallback(t.sharedElementCallback);
+        t = new TransitionManager(OneActivity.this).getSingle();
 
 
         ivShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t.startViewerActivity(OneActivity.this, v, url);
+                t.startViewerActivity(v, url);
             }
         });
     }

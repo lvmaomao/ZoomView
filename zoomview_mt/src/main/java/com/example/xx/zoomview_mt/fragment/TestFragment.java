@@ -10,7 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.xx.zoomview_mt.R;
-import com.yy.www.libs.TransitionFragmentMultiHelper;
+import com.yy.www.libs.TransitionManager;
+import com.yy.www.libs.helper.TransitionHalfHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class TestFragment extends Fragment implements TestAdapter.onImageViewCli
 
     List<String> urls;
 
-    TransitionFragmentMultiHelper helper;
+    TransitionHalfHelper helper;
 
     public static TestFragment getInstance() {
 
@@ -39,7 +40,7 @@ public class TestFragment extends Fragment implements TestAdapter.onImageViewCli
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test, container, false);
         rvImage = (RecyclerView) view.findViewById(R.id.rvImage);
-        helper = new TransitionFragmentMultiHelper();
+        helper = new TransitionManager(getActivity()).getHalf();
         initDummy();
         initRv();
         return view;
@@ -67,7 +68,7 @@ public class TestFragment extends Fragment implements TestAdapter.onImageViewCli
 
     @Override
     public void onImageClick(View v, int position) {
-        helper.startViewerActivity(getActivity(), v, (ArrayList<String>) urls, position);
+        helper.startViewerActivity(v, (ArrayList<String>) urls, position);
     }
 
 

@@ -1,4 +1,4 @@
-package com.yy.www.libs;
+package com.yy.www.libs.helper;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.view.View;
 
+import com.yy.www.libs.Constant;
 import com.yy.www.libs.view.ViewerActivity;
 
 import java.util.ArrayList;
@@ -18,22 +19,23 @@ import static com.yy.www.libs.Constant.PARAMS_TRANSITIONNAMES;
  * Created by yangyu on 16/10/9.
  */
 
-public class TransitionFragmentMultiHelper {
+public class TransitionHalfHelper {
+
+    private int defPosition = 0;
 
     private ArrayList<String> transitionNames;
 
-    private View transitionView;
+    private Activity mContext;
+
+    public TransitionHalfHelper(Activity activity) {
+        this.mContext = activity;
+    }
 
     /**
      * multi Image
-     *
-     * @param activity
-     * @param urlStrings 位移的描述
-     * @param position   点击的位置
      */
-    public void startViewerActivity(Activity activity, View view, ArrayList<String> urlStrings, int position) {
+    public void startViewerActivity(View view, ArrayList<String> urlStrings, int position) {
 
-        this.transitionView = view;
         if (transitionNames == null) {
             transitionNames = new ArrayList<>();
         } else {
@@ -41,21 +43,20 @@ public class TransitionFragmentMultiHelper {
         }
         transitionNames.addAll(urlStrings);
 
-        Intent intent = new Intent(activity, ViewerActivity.class);
+        Intent intent = new Intent(mContext, ViewerActivity.class);
         intent.putExtra(PARAMS_TRANSITIONNAMES, urlStrings);
         intent.putExtra(PARAMS_TRANSITIONINDEX, position);
         intent.putExtra(PARAMS_OVER_TARGET, Constant.Target.TARGET_SKIP);
-
         ActivityOptionsCompat optionsCompat;
 
         if (Build.VERSION.SDK_INT >= 16) {
-            optionsCompat = ActivityOptionsCompat.makeScaleUpAnimation(transitionView, 0, 0, transitionView.getWidth(), transitionView.getHeight());
+            optionsCompat = ActivityOptionsCompat.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
             if (Build.VERSION.SDK_INT >= 21) {
-                optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, transitionView, urlStrings.get(position));
+                optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, view, transitionNames.get(defPosition));
             }
-            activity.startActivity(intent, optionsCompat.toBundle());
+            mContext.startActivity(intent, optionsCompat.toBundle());
         } else
-            activity.startActivity(intent);
+            mContext.startActivity(intent);
     }
 
 
