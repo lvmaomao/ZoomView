@@ -21,8 +21,6 @@ import static com.yy.www.libs.Constant.PARAMS_TRANSITIONNAMES;
 
 public class TransitionHalfHelper {
 
-    private int defPosition = 0;
-
     private ArrayList<String> transitionNames;
 
     private Activity mContext;
@@ -52,7 +50,7 @@ public class TransitionHalfHelper {
         if (Build.VERSION.SDK_INT >= 16) {
             optionsCompat = ActivityOptionsCompat.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
             if (Build.VERSION.SDK_INT >= 21) {
-                optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, view, transitionNames.get(defPosition));
+                optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, view, transitionNames.get(position));
             }
             mContext.startActivity(intent, optionsCompat.toBundle());
         } else
