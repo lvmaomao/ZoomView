@@ -26,7 +26,7 @@ public class OneActivity extends AppCompatActivity {
 
         ivShow = (ImageView) findViewById(R.id.ivShow);
         Picasso.with(this)
-                .load(url)
+                .load(R.mipmap.ic_launcher)
                 .into(ivShow);
 
         t = new TransitionManager(OneActivity.this).getSingle();
@@ -35,7 +35,7 @@ public class OneActivity extends AppCompatActivity {
         ivShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t.startViewerActivity(v, url);
+                t.startViewerActivity(v, R.mipmap.ic_launcher);
             }
         });
     }

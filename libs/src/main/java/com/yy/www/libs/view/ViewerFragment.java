@@ -13,7 +13,15 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.yy.www.libs.R;
 
+import java.io.File;
+
 import uk.co.senab.photoview.PhotoViewAttacher;
+
+import static com.yy.www.libs.TransitionConstant.PARAMS_DATA;
+import static com.yy.www.libs.TransitionConstant.PARAMS_IMAGE_SOURCE;
+import static com.yy.www.libs.TransitionConstant.Type.TYPE_FILE;
+import static com.yy.www.libs.TransitionConstant.Type.TYPE_REMOTE;
+import static com.yy.www.libs.TransitionConstant.Type.TYPE_RESID;
 
 /**
  * Created by xx on 2016/9/11.
@@ -26,7 +34,13 @@ public class ViewerFragment extends Fragment {
 
     private ImageView image;
 
-    private String url;
+    private int imageType;
+
+    private String imageUrl;
+
+    private int imageResid;
+
+    private File imageFile;
 
     private boolean hasSharedElementTransition;
     private boolean isTransitionExecuted = false;
@@ -38,8 +52,18 @@ public class ViewerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        url = getArguments().getString("image");
+        imageType = getArguments().getInt(PARAMS_IMAGE_SOURCE);
+        switch (imageType) {
+            case TYPE_FILE:
+                imageFile = new File(getArguments().getString(PARAMS_DATA));
+                break;
+            case TYPE_REMOTE:
+                imageUrl = getArguments().getString(PARAMS_DATA);
+                break;
+            case TYPE_RESID:
+                imageResid = getArguments().getInt(PARAMS_DATA, 0);
+                break;
+        }
 
         hasSharedElementTransition = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
@@ -59,6 +83,7 @@ public class ViewerFragment extends Fragment {
         if (savedInstanceState != null) {
             isTransitionExecuted = savedInstanceState.getBoolean("transition_executed", false);
         }
+
         loadFullImage();
     }
 
@@ -94,19 +119,55 @@ public class ViewerFragment extends Fragment {
      * 展示图片
      */
     private void loadFullImage() {
-        Picasso.with(getActivity())
-                .load(url)
-                .into(image, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        initPhotoView();
-                    }
 
-                    @Override
-                    public void onError() {
+        switch (imageType) {
+            case TYPE_FILE:
+                Picasso.with(getActivity())
+                        .load(imageFile)
+                        .into(image, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                initPhotoView();
+                            }
 
-                    }
-                });
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
+
+                break;
+            case TYPE_REMOTE:
+                Picasso.with(getActivity())
+                        .load(imageUrl)
+                        .into(image, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                initPhotoView();
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
+                break;
+            case TYPE_RESID:
+                Picasso.with(getActivity())
+                        .load(imageResid)
+                        .into(image, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                initPhotoView();
+                            }
+
+                            @Override
+                            public void onError() {
+
+                            }
+                        });
+                break;
+        }
 
 
     }

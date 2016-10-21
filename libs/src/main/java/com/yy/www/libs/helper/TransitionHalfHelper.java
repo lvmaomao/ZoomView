@@ -1,60 +1,58 @@
 package com.yy.www.libs.helper;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.view.View;
-
-import com.yy.www.libs.Constant;
-import com.yy.www.libs.view.ViewerActivity;
 
 import java.util.ArrayList;
 
-import static com.yy.www.libs.Constant.PARAMS_OVER_TARGET;
-import static com.yy.www.libs.Constant.PARAMS_TRANSITIONINDEX;
-import static com.yy.www.libs.Constant.PARAMS_TRANSITIONNAMES;
+import static com.yy.www.libs.TransitionConstant.TRANSITION_NAME_START;
 
 /**
  * Created by yangyu on 16/10/9.
  */
 
-public class TransitionHalfHelper {
+public class TransitionHalfHelper<T> extends TransitionHelper {
 
     private ArrayList<String> transitionNames;
 
-    private Activity mContext;
-
     public TransitionHalfHelper(Activity activity) {
-        this.mContext = activity;
+        super(activity);
     }
 
     /**
      * multi Image
      */
-    public void startViewerActivity(View view, ArrayList<String> urlStrings, int position) {
+    public void startViewerActivity(View view, ArrayList<T> urlStrings, int position) {
 
-        if (transitionNames == null) {
-            transitionNames = new ArrayList<>();
-        } else {
-            transitionNames.clear();
+        setStart_position(position);
+        setShowList(optShowList(urlStrings));
+        setTransitionNames(optTransitionNames(urlStrings));
+        setTranstionView(view);
+
+        startActivity();
+
+
+    }
+
+
+    /**
+     * 获取需要展示的内容
+     *
+     * @param urlStrings
+     * @return
+     */
+    private ArrayList optShowList(ArrayList<T> urlStrings) {
+        ArrayList<T> list = new ArrayList<>(urlStrings.size());
+        list.addAll(urlStrings);
+        return list;
+    }
+
+    private ArrayList optTransitionNames(ArrayList<T> urlStrings) {
+        ArrayList<String> list = new ArrayList<>(urlStrings.size());
+        for (int i = 0; i < urlStrings.size(); i++) {
+            list.add(TRANSITION_NAME_START + i);
         }
-        transitionNames.addAll(urlStrings);
-
-        Intent intent = new Intent(mContext, ViewerActivity.class);
-        intent.putExtra(PARAMS_TRANSITIONNAMES, urlStrings);
-        intent.putExtra(PARAMS_TRANSITIONINDEX, position);
-        intent.putExtra(PARAMS_OVER_TARGET, Constant.Target.TARGET_SKIP);
-        ActivityOptionsCompat optionsCompat;
-
-        if (Build.VERSION.SDK_INT >= 16) {
-            optionsCompat = ActivityOptionsCompat.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
-            if (Build.VERSION.SDK_INT >= 21) {
-                optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, view, transitionNames.get(position));
-            }
-            mContext.startActivity(intent, optionsCompat.toBundle());
-        } else
-            mContext.startActivity(intent);
+        return list;
     }
 
 

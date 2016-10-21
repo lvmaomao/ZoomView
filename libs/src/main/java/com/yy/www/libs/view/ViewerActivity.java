@@ -13,25 +13,34 @@ import android.support.v4.app.SharedElementCallback;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.yy.www.libs.Constant;
 import com.yy.www.libs.R;
 import com.yy.www.libs.widget.ConflictViewPager;
 import com.yy.www.libs.widget.PullBackLayout;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static com.yy.www.libs.Constant.PARAMS_OVER_TARGET;
-import static com.yy.www.libs.Constant.PARAMS_RETURNINDEX;
-import static com.yy.www.libs.Constant.PARAMS_TRANSITIONINDEX;
-import static com.yy.www.libs.Constant.PARAMS_TRANSITIONNAMES;
+import static com.yy.www.libs.TransitionConstant.PARAMS_ANIM_TYPE;
+import static com.yy.www.libs.TransitionConstant.PARAMS_DATA;
+import static com.yy.www.libs.TransitionConstant.PARAMS_IMAGE_SOURCE;
+import static com.yy.www.libs.TransitionConstant.PARAMS_IMAGE_TYPE;
+import static com.yy.www.libs.TransitionConstant.PARAMS_RETURNINDEX;
+import static com.yy.www.libs.TransitionConstant.PARAMS_TRANSITIONINDEX;
+import static com.yy.www.libs.TransitionConstant.PARAMS_TRANSITIONNAMES;
+import static com.yy.www.libs.TransitionConstant.Type.TYPE_FILE;
+import static com.yy.www.libs.TransitionConstant.Type.TYPE_HAVE_NOT_ANIM;
+import static com.yy.www.libs.TransitionConstant.Type.TYPE_IMAGE_NORMAL;
+import static com.yy.www.libs.TransitionConstant.Type.TYPE_REMOTE;
+import static com.yy.www.libs.TransitionConstant.Type.TYPE_RESID;
 
 /**
  * 图片展示Activity
  */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-public class ViewerActivity extends AppCompatActivity implements PullBackLayout.Callback {
+public class ViewerActivity<T> extends AppCompatActivity implements PullBackLayout.Callback {
 
     /**
      * 上拉下拉关闭ViewGroup
@@ -53,14 +62,18 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
      */
     private ColorDrawable background;
 
-    private List<String> mUrlStrings = new ArrayList<>();
+    private List<T> showList = new ArrayList<>();
+
+    private List<String> transitionNames = new ArrayList<>();
 
     private int mIndex;
 
     /**
      * 关闭方法
      */
-    private int target;
+    private int anim_type;
+    private int image_type;
+
 
     public ViewerFragment getCurrent() {
         return (ViewerFragment) adapter.instantiateItem(pager, pager.getCurrentItem());
@@ -83,9 +96,9 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
         setEnterSharedElementCallback(new SharedElementCallback() {
             @Override
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-                if (mUrlStrings != null && mUrlStrings.size() > 0) {
+                if (transitionNames != null && transitionNames.size() > 0) {
                     sharedElements.clear();
-                    sharedElements.put(mUrlStrings.get(pager.getCurrentItem()), getCurrent().getSharedElement());
+                    sharedElements.put(transitionNames.get(pager.getCurrentItem()), getCurrent().getSharedElement());
                 }
             }
         });
@@ -98,13 +111,11 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
 
 
     private void getIntentData() {
-        //如果是single 位置为0
         mIndex = getIntent().getIntExtra(PARAMS_TRANSITIONINDEX, 0);
-        target = getIntent().getIntExtra(PARAMS_OVER_TARGET, 0);
-        mUrlStrings.addAll(getIntent().getStringArrayListExtra(PARAMS_TRANSITIONNAMES));
-
-        if (mUrlStrings == null || mUrlStrings.size() < 1)
-            throw new NullPointerException("Please use the startViewerActivity for intent ViewerActivity");
+        anim_type = getIntent().getIntExtra(PARAMS_ANIM_TYPE, TYPE_IMAGE_NORMAL);
+        image_type = getIntent().getIntExtra(PARAMS_IMAGE_TYPE, TYPE_HAVE_NOT_ANIM);
+        transitionNames.addAll(getIntent().getStringArrayListExtra(PARAMS_TRANSITIONNAMES));
+        showList.addAll((Collection<? extends T>) getIntent().getParcelableArrayListExtra(PARAMS_DATA));
     }
 
     private void initPuller() {
@@ -165,10 +176,21 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
 
         @Override
         public Fragment getItem(int position) {
-            String url = mUrlStrings.get(position);
+            T source = showList.get(position);
 
             Bundle arguments = new Bundle();
-            arguments.putString("image", url);
+            if (source instanceof File) {
+                arguments.putString(PARAMS_DATA, ((File) source).getAbsolutePath());
+                arguments.putInt(PARAMS_IMAGE_SOURCE, TYPE_FILE);
+            } else if (source instanceof String) {
+                arguments.putString(PARAMS_DATA, (String) source);
+                arguments.putInt(PARAMS_IMAGE_SOURCE, TYPE_REMOTE);
+
+            } else if (source instanceof Integer) {
+                arguments.putInt(PARAMS_DATA, (Integer) source);
+                arguments.putInt(PARAMS_IMAGE_SOURCE, TYPE_RESID);
+
+            }
 
             Fragment fragment = new ViewerFragment();
             fragment.setArguments(arguments);
@@ -178,20 +200,23 @@ public class ViewerActivity extends AppCompatActivity implements PullBackLayout.
 
         @Override
         public int getCount() {
-            return mUrlStrings.size();
+            return showList.size();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mUrlStrings != null) {
-            mUrlStrings.clear();
+        if (showList != null) {
+            showList.clear();
+        }
+        if (transitionNames != null) {
+            transitionNames.clear();
         }
     }
 
     public void closeAct() {
-        if (target == Constant.Target.TARGET_SKIP) {
+        if (anim_type == TYPE_HAVE_NOT_ANIM) {
             finish();
         } else {
             supportFinishAfterTransition();

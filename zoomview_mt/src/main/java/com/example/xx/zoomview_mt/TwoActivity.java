@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.yy.www.libs.TransitionConstant;
 import com.yy.www.libs.TransitionManager;
 import com.yy.www.libs.helper.TransitionMultiHelper;
 
@@ -41,6 +42,7 @@ public class TwoActivity extends AppCompatActivity {
 
     private void initHelper() {
         helper = new TransitionManager(TwoActivity.this).getMulti();
+        helper.setAnim_type(TransitionConstant.Type.TYPE_HAVE_ANIM);
         setExitSharedElementCallback(helper.sharedElementCallback);
 
     }

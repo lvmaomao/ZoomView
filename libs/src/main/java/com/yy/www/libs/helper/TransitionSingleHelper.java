@@ -1,55 +1,52 @@
 package com.yy.www.libs.helper;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.view.View;
-
-import com.yy.www.libs.view.ViewerActivity;
 
 import java.util.ArrayList;
 
-import static com.yy.www.libs.Constant.PARAMS_TRANSITIONNAMES;
+import static com.yy.www.libs.TransitionConstant.TRANSITION_NAME_START;
 
 /**
  * 针对单个ImageView 的位移
  */
-public class TransitionSingleHelper {
-    /**
-     * 展示页面需要的格式
-     */
-    private ArrayList<String> transitionNames;
-
-    private Activity mContext;
+public class TransitionSingleHelper<T> extends TransitionHelper {
 
     public TransitionSingleHelper(Activity activity) {
-        mContext = activity;
+        super(activity);
     }
 
 
     /**
      * single Image
      */
-    public void startViewerActivity(View view, String urlString) {
-        if (transitionNames == null) {
-            transitionNames = new ArrayList<>();
-        } else {
-            transitionNames.clear();
-        }
-        transitionNames.add(urlString);
-        Intent intent = new Intent(mContext, ViewerActivity.class);
-        intent.putExtra(PARAMS_TRANSITIONNAMES, transitionNames);
-        ActivityOptionsCompat optionsCompat;
+    public void startViewerActivity(View view, T urlString) {
 
-        if (Build.VERSION.SDK_INT >= 16) {
-            optionsCompat = ActivityOptionsCompat.makeScaleUpAnimation(view, 0, 0, view.getWidth(), view.getHeight());
-            if (Build.VERSION.SDK_INT >= 21) {
-                optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(mContext, view, urlString);
-            }
-            mContext.startActivity(intent, optionsCompat.toBundle());
-        } else
-            mContext.startActivity(intent);
+        setShowList(optShowList(urlString));
+        setTransitionNames(optTransitionNames());
+        setTranstionView(view);
+
+        startActivity();
     }
+
+
+    /**
+     * 获取需要展示的内容
+     *
+     * @param urlString
+     * @return
+     */
+    private ArrayList optShowList(T urlString) {
+        ArrayList<T> list = new ArrayList<>(1);
+        list.add(urlString);
+        return list;
+    }
+
+    private ArrayList optTransitionNames() {
+        ArrayList<String> list = new ArrayList<>(1);
+        list.add(TRANSITION_NAME_START + 0);
+        return list;
+    }
+
 
 }
