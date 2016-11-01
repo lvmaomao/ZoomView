@@ -1,16 +1,15 @@
 package com.yy.www.libs.view;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.yy.www.libs.R;
@@ -39,7 +38,6 @@ import static com.yy.www.libs.TransitionConstant.Type.TYPE_RESID;
 /**
  * 图片展示Activity
  */
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 public class ViewerActivity<T> extends AppCompatActivity implements PullBackLayout.Callback {
 
     /**
@@ -93,12 +91,20 @@ public class ViewerActivity<T> extends AppCompatActivity implements PullBackLayo
         getIntentData();
         initPuller();
         initAdapter(mIndex);
+        //Support library version of postponeEnterTransition() that works only on API 21 and later.
+        //延迟过渡动画
+        supportPostponeEnterTransition();
+
         setEnterSharedElementCallback(new SharedElementCallback() {
             @Override
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-                if (transitionNames != null && transitionNames.size() > 0) {
-                    sharedElements.clear();
-                    sharedElements.put(transitionNames.get(pager.getCurrentItem()), getCurrent().getSharedElement());
+                try {
+                    if (transitionNames != null && transitionNames.size() > 0) {
+                        sharedElements.clear();
+                        sharedElements.put(transitionNames.get(pager.getCurrentItem()), getCurrent().getSharedElement());
+                    }
+                } catch (NullPointerException e) {
+                    Log.e("ViewerActivity", "onMapSharedElements : " + e.toString());
                 }
             }
         });
