@@ -7,9 +7,11 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.view.View;
 
 import com.yy.www.libs.TransitionConstant;
+import com.yy.www.libs.bean.ZoomBean;
 import com.yy.www.libs.view.ViewerActivity;
 
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.List;
 
 import static com.yy.www.libs.TransitionConstant.PARAMS_ANIM_TYPE;
 import static com.yy.www.libs.TransitionConstant.PARAMS_DATA;
@@ -31,12 +33,12 @@ public abstract class TransitionHelper<T> {
     /**
      * 需要展示的数据
      */
-    private ArrayList<T> showList;
+    private List<ZoomBean<T>> showList;
 
     /**
      * 共享元素的name
      */
-    private ArrayList<String> transitionNames;
+    private List<String> transitionNames;
 
     /**
      * 共享元素的view
@@ -64,19 +66,19 @@ public abstract class TransitionHelper<T> {
     }
 
 
-    public ArrayList<T> getShowList() {
+    public List<ZoomBean<T>> getShowList() {
         return showList;
     }
 
-    public void setShowList(ArrayList<T> showList) {
+    public void setShowList(List<ZoomBean<T>> showList) {
         this.showList = showList;
     }
 
-    public ArrayList<String> getTransitionNames() {
+    public List<String> getTransitionNames() {
         return transitionNames;
     }
 
-    public void setTransitionNames(ArrayList<String> transitionNames) {
+    public void setTransitionNames(List<String> transitionNames) {
         this.transitionNames = transitionNames;
     }
 
@@ -110,8 +112,8 @@ public abstract class TransitionHelper<T> {
     protected void startActivity() {
         Intent intent = new Intent(mContext, ViewerActivity.class);
 
-        intent.putExtra(PARAMS_DATA, showList);
-        intent.putExtra(PARAMS_TRANSITIONNAMES, transitionNames);
+        intent.putExtra(PARAMS_DATA, (Serializable) showList);
+        intent.putExtra(PARAMS_TRANSITIONNAMES, (Serializable) transitionNames);
         intent.putExtra(PARAMS_ANIM_TYPE, anim_type);
         intent.putExtra(PARAMS_IMAGE_TYPE, image_type);
         intent.putExtra(PARAMS_TRANSITIONINDEX, start_position);

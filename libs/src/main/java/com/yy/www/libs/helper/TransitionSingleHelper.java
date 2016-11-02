@@ -3,6 +3,8 @@ package com.yy.www.libs.helper;
 import android.app.Activity;
 import android.view.View;
 
+import com.yy.www.libs.bean.ZoomBean;
+
 import java.util.ArrayList;
 
 import static com.yy.www.libs.TransitionConstant.TRANSITION_NAME_START;
@@ -16,16 +18,14 @@ public class TransitionSingleHelper<T> extends TransitionHelper {
         super(activity);
     }
 
-
     /**
      * single Image
      */
-    public void startViewerActivity(View view, T urlString) {
+    public void startViewerActivity(View view, ZoomBean<T> urlString) {
 
         setShowList(optShowList(urlString));
         setTransitionNames(optTransitionNames());
         setTranstionView(view);
-
         startActivity();
     }
 
@@ -36,8 +36,8 @@ public class TransitionSingleHelper<T> extends TransitionHelper {
      * @param urlString
      * @return
      */
-    private ArrayList optShowList(T urlString) {
-        ArrayList<T> list = new ArrayList<>(1);
+    private ArrayList optShowList(ZoomBean<T> urlString) {
+        ArrayList<ZoomBean<T>> list = new ArrayList<>(1);
         list.add(urlString);
         return list;
     }

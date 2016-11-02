@@ -3,7 +3,10 @@ package com.yy.www.libs.helper;
 import android.app.Activity;
 import android.view.View;
 
+import com.yy.www.libs.bean.ZoomBean;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.yy.www.libs.TransitionConstant.TRANSITION_NAME_START;
 
@@ -22,7 +25,7 @@ public class TransitionHalfHelper<T> extends TransitionHelper {
     /**
      * multi Image
      */
-    public void startViewerActivity(View view, ArrayList<T> urlStrings, int position) {
+    public void startViewerActivity(View view, List<ZoomBean<T>> urlStrings, int position) {
 
         setStart_position(position);
         setShowList(optShowList(urlStrings));
@@ -41,13 +44,13 @@ public class TransitionHalfHelper<T> extends TransitionHelper {
      * @param urlStrings
      * @return
      */
-    private ArrayList optShowList(ArrayList<T> urlStrings) {
-        ArrayList<T> list = new ArrayList<>(urlStrings.size());
+    private List optShowList(List<ZoomBean<T>> urlStrings) {
+        ArrayList<ZoomBean<T>> list = new ArrayList<>(urlStrings.size());
         list.addAll(urlStrings);
         return list;
     }
 
-    private ArrayList optTransitionNames(ArrayList<T> urlStrings) {
+    private List optTransitionNames(List<ZoomBean<T>> urlStrings) {
         ArrayList<String> list = new ArrayList<>(urlStrings.size());
         for (int i = 0; i < urlStrings.size(); i++) {
             list.add(TRANSITION_NAME_START + i);

@@ -17,6 +17,7 @@ import android.widget.ViewSwitcher;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.yy.www.libs.R;
+import com.yy.www.libs.bean.ZoomBean;
 import com.yy.www.libs.util.EnterTransitionCompat;
 import com.yy.www.libs.util.SimpleTransitionListener;
 
@@ -26,10 +27,6 @@ import java.lang.ref.WeakReference;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static com.yy.www.libs.TransitionConstant.PARAMS_DATA;
-import static com.yy.www.libs.TransitionConstant.PARAMS_IMAGE_SOURCE;
-import static com.yy.www.libs.TransitionConstant.Type.TYPE_FILE;
-import static com.yy.www.libs.TransitionConstant.Type.TYPE_REMOTE;
-import static com.yy.www.libs.TransitionConstant.Type.TYPE_RESID;
 
 /**
  * Created by xx on 2016/9/11.
@@ -51,17 +48,7 @@ public class ViewerFragment extends Fragment {
     private ViewSwitcher fade;
     private View sharedElement;
 
-    /**
-     * type: img。resid。file
-     */
-    private int imageType;
-
-    /**
-     * params
-     */
-    private String imageUrl;
-    private int imageResid;
-    private File imageFile;
+    ZoomBean zoomBean;
 
     private boolean hasSharedElementTransition;
     private boolean isTransitionExecuted = false;
@@ -71,7 +58,7 @@ public class ViewerFragment extends Fragment {
         WeakReference<ViewerFragment> mActivityReference;
 
         MyHandler(ViewerFragment viewerFragment) {
-            mActivityReference = new WeakReference<ViewerFragment>(viewerFragment);
+            mActivityReference = new WeakReference<>(viewerFragment);
         }
 
         @Override
@@ -88,23 +75,10 @@ public class ViewerFragment extends Fragment {
     }
 
 
-
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        imageType = getArguments().getInt(PARAMS_IMAGE_SOURCE);
-        switch (imageType) {
-            case TYPE_FILE:
-                imageFile = new File(getArguments().getString(PARAMS_DATA));
-                break;
-            case TYPE_REMOTE:
-                imageUrl = getArguments().getString(PARAMS_DATA);
-                break;
-            case TYPE_RESID:
-                imageResid = getArguments().getInt(PARAMS_DATA, 0);
-                break;
-        }
+        zoomBean = (ZoomBean) getArguments().getSerializable(PARAMS_DATA);
         hasSharedElementTransition = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
@@ -129,16 +103,18 @@ public class ViewerFragment extends Fragment {
     }
 
     private void loadImage() {
-        if (hasSharedElementTransition &&
-                !isTransitionExecuted &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (getActivity() != null &&
+                hasSharedElementTransition &&
+                !isTransitionExecuted) {
             isTransitionExecuted = true;
             loadThumbnail();
             EnterTransitionCompat.addListener(getActivity().getWindow(), new SimpleTransitionListener() {
                 @Override
                 public void onTransitionEnd(Transition transition) {
-                    EnterTransitionCompat.removeListener(getActivity().getWindow(), this);
-                    loadFullImage();
+                    if (getActivity() != null) {
+                        EnterTransitionCompat.removeListener(getActivity().getWindow(), this);
+                        loadFullImage();
+                    }
                 }
             });
         } else {
@@ -159,24 +135,20 @@ public class ViewerFragment extends Fragment {
 
     private void loadThumbnail() {
 
-        switch (imageType) {
-            case TYPE_FILE:
-                Picasso.with(getActivity())
-                        .load(imageFile)
-                        .into(thumbnail, getThumbCallback());
-
-                break;
-            case TYPE_REMOTE:
-                Picasso.with(getActivity())
-                        .load(imageUrl)
-                        .into(thumbnail, getThumbCallback());
-                break;
-            case TYPE_RESID:
-                Picasso.with(getActivity())
-                        .load(imageResid)
-                        .into(thumbnail, getThumbCallback());
-                break;
+        if (zoomBean.getThumb() instanceof File) {
+            Picasso.with(getActivity())
+                    .load((File) zoomBean.getThumb())
+                    .into(thumbnail, getThumbCallback());
+        } else if (zoomBean.getThumb() instanceof String) {
+            Picasso.with(getActivity())
+                    .load((String) zoomBean.getThumb())
+                    .into(thumbnail, getThumbCallback());
+        } else if (zoomBean.getThumb() instanceof Integer) {
+            Picasso.with(getActivity())
+                    .load((Integer) zoomBean.getThumb())
+                    .into(thumbnail, getThumbCallback());
         }
+
     }
 
     /**
@@ -184,23 +156,18 @@ public class ViewerFragment extends Fragment {
      */
     private void loadFullImage() {
 
-        switch (imageType) {
-            case TYPE_FILE:
-                Picasso.with(getActivity())
-                        .load(imageFile)
-                        .into(image, getFullCallback());
-
-                break;
-            case TYPE_REMOTE:
-                Picasso.with(getActivity())
-                        .load(imageUrl)
-                        .into(image, getFullCallback());
-                break;
-            case TYPE_RESID:
-                Picasso.with(getActivity())
-                        .load(imageResid)
-                        .into(image, getFullCallback());
-                break;
+        if (zoomBean.getImage() instanceof File) {
+            Picasso.with(getActivity())
+                    .load((File) zoomBean.getImage())
+                    .into(image, getFullCallback());
+        } else if (zoomBean.getImage() instanceof String) {
+            Picasso.with(getActivity())
+                    .load((String) zoomBean.getImage())
+                    .into(image, getFullCallback());
+        } else if (zoomBean.getImage() instanceof Integer) {
+            Picasso.with(getActivity())
+                    .load((Integer) zoomBean.getImage())
+                    .into(image, getFullCallback());
         }
 
     }

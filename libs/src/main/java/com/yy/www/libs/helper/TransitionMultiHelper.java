@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v4.app.SharedElementCallback;
 import android.view.View;
 
+import com.yy.www.libs.bean.ZoomBean;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +62,7 @@ public class TransitionMultiHelper<T> extends TransitionHelper {
      * @param urlStrings 位移的描述
      * @param position   点击的位置
      */
-    public void startViewerActivity(View view, ArrayList<T> urlStrings, int position) {
+    public void startViewerActivity(View view, List<ZoomBean<T>> urlStrings, int position) {
         setStart_position(position);
         setShowList(optShowList(urlStrings));
         setTransitionNames(optTransitionNames(urlStrings));
@@ -75,13 +77,13 @@ public class TransitionMultiHelper<T> extends TransitionHelper {
      * @param urlStrings
      * @return
      */
-    private ArrayList optShowList(ArrayList<T> urlStrings) {
-        ArrayList<T> list = new ArrayList<>(urlStrings.size());
+    private List optShowList(List<ZoomBean<T>> urlStrings) {
+        ArrayList<ZoomBean<T>> list = new ArrayList<>(urlStrings.size());
         list.addAll(urlStrings);
         return list;
     }
 
-    private ArrayList optTransitionNames(ArrayList<T> urlStrings) {
+    private List optTransitionNames(List<ZoomBean<T>> urlStrings) {
         ArrayList<String> list = new ArrayList<>(urlStrings.size());
         for (int i = 0; i < urlStrings.size(); i++) {
             list.add(TRANSITION_NAME_START + i);

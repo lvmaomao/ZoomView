@@ -7,7 +7,9 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.yy.www.libs.TransitionConstant;
 import com.yy.www.libs.TransitionManager;
+import com.yy.www.libs.bean.ZoomBean;
 import com.yy.www.libs.helper.TransitionSingleHelper;
 
 /**
@@ -30,12 +32,13 @@ public class OneActivity extends AppCompatActivity {
                 .into(ivShow);
 
         t = new TransitionManager(OneActivity.this).getSingle();
+        t.setAnim_type(TransitionConstant.Type.TYPE_HAVE_ANIM);
 
 
         ivShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t.startViewerActivity(v, R.mipmap.ic_launcher);
+                t.startViewerActivity(v, new ZoomBean(R.mipmap.ic_launcher, R.mipmap.ic_launcher));
             }
         });
     }

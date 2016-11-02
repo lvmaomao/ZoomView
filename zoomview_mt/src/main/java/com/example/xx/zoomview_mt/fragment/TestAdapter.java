@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import com.example.xx.zoomview_mt.R;
 import com.squareup.picasso.Picasso;
+import com.yy.www.libs.bean.ZoomBean;
 
 import java.util.List;
 
@@ -21,18 +22,14 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder> {
 
     public LayoutInflater inflater;
 
-    private List<String> IMG_URL_LIST;
+    private List<ZoomBean<String>> IMG_URL_LIST;
 
-
-    public TestAdapter(Context mContext, onImageViewClickListener listener, List<String> IMG_URL_LIST) {
+    public TestAdapter(Context mContext, onImageViewClickListener listener, List<ZoomBean<String>> IMG_URL_LIST) {
         this.mContext = mContext;
         this.listener = listener;
         this.IMG_URL_LIST = IMG_URL_LIST;
         this.inflater = LayoutInflater.from(mContext);
     }
-
-
-
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -44,7 +41,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Picasso.with(mContext)
-                .load(IMG_URL_LIST.get(position))
+                .load(IMG_URL_LIST.get(position).getThumb())
                 .into(holder.ivImg);
     }
 

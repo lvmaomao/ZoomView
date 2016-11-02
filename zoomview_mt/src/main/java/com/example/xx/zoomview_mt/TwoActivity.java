@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 import com.yy.www.libs.TransitionConstant;
 import com.yy.www.libs.TransitionManager;
+import com.yy.www.libs.bean.ZoomBean;
 import com.yy.www.libs.helper.TransitionMultiHelper;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class TwoActivity extends AppCompatActivity {
     private GridLayoutManager manager;
 
 
-    private List<String> IMG_URL_LIST = new ArrayList<>();
+    private List<ZoomBean<String>> IMG_URL_LIST = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,15 +59,15 @@ public class TwoActivity extends AppCompatActivity {
 
     private void initDatas() {
         IMG_URL_LIST.clear();
-        IMG_URL_LIST.add("http://www.5djiaren.com/uploads/2016-06/08-165944_676.jpg");
-        IMG_URL_LIST.add("http://www.5djiaren.com/uploads/2016-06/08-165945_452.jpg");
-        IMG_URL_LIST.add("http://p.ishowx.com/uploads/allimg/160819/486-160QZT454.jpg");
-        IMG_URL_LIST.add("http://dmr.nosdn.127.net/1o51ADEcJbidc5Y2FFYnfA==/6896093022349149358.jpg");
-        IMG_URL_LIST.add("http://p.ishowx.com/uploads/allimg/160907/486-160ZG40449.jpg");
-        IMG_URL_LIST.add("http://tpic.home.news.cn/xhCloudNewsPic/xhpic1501/M0B/21/86/wKhTlFe7xeOEJDV4AAAAAPbonyI938.jpg");
-        IMG_URL_LIST.add("http://p.ishowx.com/uploads/allimg/160902/415-160Z2093517.jpg");
-        IMG_URL_LIST.add("http://img2.imgtn.bdimg.com/it/u=1770407502,1713614648&fm=11&gp=0.jpg");
-        IMG_URL_LIST.add("http://img5.duitang.com/uploads/item/201407/27/20140727202737_sZLAX.jpeg");
+        IMG_URL_LIST.add(new ZoomBean<>("http://www.5djiaren.com/uploads/2016-06/08-165944_676.jpg", "http://www.5djiaren.com/uploads/2016-06/08-165944_676.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://www.5djiaren.com/uploads/2016-06/08-165945_452.jpg", "http://www.5djiaren.com/uploads/2016-06/08-165945_452.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://p.ishowx.com/uploads/allimg/160819/486-160QZT454.jpg", "http://p.ishowx.com/uploads/allimg/160819/486-160QZT454.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://dmr.nosdn.127.net/1o51ADEcJbidc5Y2FFYnfA==/6896093022349149358.jpg", "http://dmr.nosdn.127.net/1o51ADEcJbidc5Y2FFYnfA==/6896093022349149358.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://p.ishowx.com/uploads/allimg/160907/486-160ZG40449.jpg", "http://p.ishowx.com/uploads/allimg/160907/486-160ZG40449.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://tpic.home.news.cn/xhCloudNewsPic/xhpic1501/M0B/21/86/wKhTlFe7xeOEJDV4AAAAAPbonyI938.jpg", "http://tpic.home.news.cn/xhCloudNewsPic/xhpic1501/M0B/21/86/wKhTlFe7xeOEJDV4AAAAAPbonyI938.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://p.ishowx.com/uploads/allimg/160902/415-160Z2093517.jpg", "http://p.ishowx.com/uploads/allimg/160902/415-160Z2093517.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img2.imgtn.bdimg.com/it/u=1770407502,1713614648&fm=11&gp=0.jpg", "http://img2.imgtn.bdimg.com/it/u=1770407502,1713614648&fm=11&gp=0.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img5.duitang.com/uploads/item/201407/27/20140727202737_sZLAX.jpeg", "http://img5.duitang.com/uploads/item/201407/27/20140727202737_sZLAX.jpeg"));
     }
 
 
@@ -87,7 +88,7 @@ public class TwoActivity extends AppCompatActivity {
 
             @Override
             public String updateName(int position) {
-                return IMG_URL_LIST.get(position);
+                return null;
 
             }
         });
@@ -111,7 +112,7 @@ public class TwoActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             Picasso.with(TwoActivity.this)
-                    .load(IMG_URL_LIST.get(position))
+                    .load(IMG_URL_LIST.get(position).getThumb())
                     .into(holder.ivImg);
         }
 
@@ -129,7 +130,7 @@ public class TwoActivity extends AppCompatActivity {
                 ivImg.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        helper.startViewerActivity(v, (ArrayList<String>) IMG_URL_LIST, getAdapterPosition());
+                        helper.startViewerActivity(v, IMG_URL_LIST, getAdapterPosition());
                     }
                 });
             }
