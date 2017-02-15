@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 
@@ -15,11 +17,17 @@ import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
 
+
 /**
  * Created by yangyu on 2017/2/15.
  */
 
 public class ImageZoomActivity extends AppCompatActivity {
+
+    public static final String THUMB_DATA = "thumb_data";
+
+    public static final String ORIGINAL_DATA = "original_data";
+
 
     /**
      * 上个页面的imageView集合
@@ -43,7 +51,7 @@ public class ImageZoomActivity extends AppCompatActivity {
     private PullBackLayout puller;
 
 
-    private List<ImageView> imageViewList = new ArrayList<>();  // imageView引用集合
+    private List<ImageView> imageViewList = new ArrayList<>();  // imageView引用集合 传递方需要控制数量。
     private List<String> thumbUrlList = new ArrayList<>(); //缩略图集合
     private List<String> urlList = new ArrayList<>(); //原图集合
 
@@ -89,7 +97,35 @@ public class ImageZoomActivity extends AppCompatActivity {
     private void initViewPager() {
         viewPager = (ConflictViewPager) findViewById(R.id.viewPager);
         viewPager.setCurrentItem(startPosition);
-        viewPager.setAdapter();
+        viewPager.setAdapter(new ImageAdapter());
+    }
+
+    private class ImageAdapter extends FragmentStatePagerAdapter {
+
+        public ImageAdapter() {
+            super(getSupportFragmentManager());
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+
+            Bundle arguments = new Bundle();
+            ImageView imageView = imageViewList.get(position);
+//            ImageBean
+            //获取当前用户的基本信息 ；传递到下个页面，
+            arguments.putString(THUMB_DATA, thumbUrlList.get(position));
+            arguments.putString(ORIGINAL_DATA, urlList.get(position));
+
+            Fragment fragment = ImageFragment.newInstance(arguments);
+            fragment.setArguments(arguments);
+
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return urlList.size();
+        }
     }
 
 
