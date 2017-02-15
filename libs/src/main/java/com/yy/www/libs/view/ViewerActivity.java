@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.SharedElementCallback;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -130,9 +129,9 @@ public class ViewerActivity<T> extends AppCompatActivity implements PullBackLayo
     }
 
     private void initPuller() {
-        background = new ColorDrawable(Color.BLACK);
+//        background = new ColorDrawable(Color.BLACK);
         puller.setCallback(this);
-        puller.setBackground(background);
+        puller.setBackgroundColor(Color.BLACK);
     }
 
     private void initAdapter(int mIndex) {
@@ -150,7 +149,6 @@ public class ViewerActivity<T> extends AppCompatActivity implements PullBackLayo
     @Override
     public void onPull(float progress) {
         background.setAlpha((int) (0xff * (1f - Math.abs(progress))));
-
     }
 
     @Override
