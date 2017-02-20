@@ -17,7 +17,7 @@ public class ImageBean implements Parcelable {
     float scaleX;
     float scaleY;
 
-    private ImageBean(){}
+    public ImageBean(){}
 
     public ImageBean(ImageView imageView) {
         int[] location = new int[2];

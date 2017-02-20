@@ -3,6 +3,7 @@ package com.example.xx.zoomview_mt;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,7 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
     public static final String THUMB_DATA = "thumb_data";
     public static final String ORIGINAL_DATA = "original_data";
     public static final String IMAGE_DATA = "image_data";
+    public static final String DATA_POSITION = "data_position";
 
     /**
      * 上个页面的imageView集合
@@ -47,6 +49,8 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
      * 原图
      */
     public static final String IMAGE_URL = "image_url";
+
+    private ImageAdapter adapter;
 
     private ConflictViewPager viewPager;
     private CircleIndicator indicator;
@@ -107,10 +111,11 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
 
 
     private void initViewPager() {
+        adapter = new ImageAdapter();
         viewPager = (ConflictViewPager) findViewById(R.id.viewPager);
         indicator = (CircleIndicator) findViewById(com.yy.www.libs.R.id.indicator);
         viewPager.setCurrentItem(startPosition);
-        viewPager.setAdapter(new ImageAdapter());
+        viewPager.setAdapter(adapter);
         indicator.setViewPager(viewPager);
     }
 
@@ -146,8 +151,18 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
     }
 
     private void closeAct() {
-        finish();
+        getCurrentFragment().close(viewPager.getCurrentItem());
     }
+
+    /**
+     * 获取当前的fragment
+     *
+     * @return
+     */
+    public ImageFragment getCurrentFragment() {
+        return (ImageFragment) adapter.instantiateItem(viewPager, viewPager.getCurrentItem());
+    }
+
 
     private class ImageAdapter extends FragmentStatePagerAdapter {
 
@@ -159,9 +174,10 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
         public Fragment getItem(int position) {
             Bundle arguments = new Bundle();
             //获取当前用户的基本信息 ；传递到下个页面，
-            arguments.putString(THUMB_DATA, thumbUrlList.get(position));
-            arguments.putString(ORIGINAL_DATA, urlList.get(position));
-            arguments.putParcelable(IMAGE_DATA, imageViewList.get(position));
+            arguments.putStringArrayList(THUMB_DATA, (ArrayList<String>) thumbUrlList);
+            arguments.putStringArrayList(ORIGINAL_DATA, (ArrayList<String>) urlList);
+            arguments.putParcelableArrayList(IMAGE_DATA, (ArrayList<? extends Parcelable>) imageViewList);
+            arguments.putInt(DATA_POSITION, position);
 
             Fragment fragment = ImageFragment.newInstance(arguments);
             fragment.setArguments(arguments);

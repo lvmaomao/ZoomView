@@ -59,6 +59,7 @@ public class OneActivity extends AppCompatActivity {
                 intent.putStringArrayListExtra(IMAGE_URL, (ArrayList<String>) url);
                 //默认位置为0 所以不传递 startPosition
                 startActivity(intent);
+                overridePendingTransition(0,0);
             }
         });
     }
