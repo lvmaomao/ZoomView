@@ -20,6 +20,11 @@ import com.yy.www.libs.helper.TransitionMultiHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.xx.zoomview_mt.ImageZoomActivity.IMAGE_POSITION;
+import static com.example.xx.zoomview_mt.ImageZoomActivity.IMAGE_THUMB_URL;
+import static com.example.xx.zoomview_mt.ImageZoomActivity.IMAGE_URL;
+import static com.example.xx.zoomview_mt.ImageZoomActivity.IMAGE_VIEWS;
+
 /**
  * Created by yangyu on 16/9/13.
  */
@@ -28,6 +33,8 @@ public class TwoActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private GridLayoutManager manager;
+    private ArrayList<String> thumbUrl = new ArrayList<>();
+    private ArrayList<String> url = new ArrayList<>();
 
 
     private List<ZoomBean<String>> IMG_URL_LIST = new ArrayList<>();
@@ -59,15 +66,35 @@ public class TwoActivity extends AppCompatActivity {
 
     private void initDatas() {
         IMG_URL_LIST.clear();
-        IMG_URL_LIST.add(new ZoomBean<>("http://www.5djiaren.com/uploads/2016-06/08-165944_676.jpg", "http://www.5djiaren.com/uploads/2016-06/08-165944_676.jpg"));
-        IMG_URL_LIST.add(new ZoomBean<>("http://www.5djiaren.com/uploads/2016-06/08-165945_452.jpg", "http://www.5djiaren.com/uploads/2016-06/08-165945_452.jpg"));
-        IMG_URL_LIST.add(new ZoomBean<>("http://p.ishowx.com/uploads/allimg/160819/486-160QZT454.jpg", "http://p.ishowx.com/uploads/allimg/160819/486-160QZT454.jpg"));
-        IMG_URL_LIST.add(new ZoomBean<>("http://dmr.nosdn.127.net/1o51ADEcJbidc5Y2FFYnfA==/6896093022349149358.jpg", "http://dmr.nosdn.127.net/1o51ADEcJbidc5Y2FFYnfA==/6896093022349149358.jpg"));
-        IMG_URL_LIST.add(new ZoomBean<>("http://p.ishowx.com/uploads/allimg/160907/486-160ZG40449.jpg", "http://p.ishowx.com/uploads/allimg/160907/486-160ZG40449.jpg"));
-        IMG_URL_LIST.add(new ZoomBean<>("http://tpic.home.news.cn/xhCloudNewsPic/xhpic1501/M0B/21/86/wKhTlFe7xeOEJDV4AAAAAPbonyI938.jpg", "http://tpic.home.news.cn/xhCloudNewsPic/xhpic1501/M0B/21/86/wKhTlFe7xeOEJDV4AAAAAPbonyI938.jpg"));
-        IMG_URL_LIST.add(new ZoomBean<>("http://p.ishowx.com/uploads/allimg/160902/415-160Z2093517.jpg", "http://p.ishowx.com/uploads/allimg/160902/415-160Z2093517.jpg"));
-        IMG_URL_LIST.add(new ZoomBean<>("http://img2.imgtn.bdimg.com/it/u=1770407502,1713614648&fm=11&gp=0.jpg", "http://img2.imgtn.bdimg.com/it/u=1770407502,1713614648&fm=11&gp=0.jpg"));
-        IMG_URL_LIST.add(new ZoomBean<>("http://img5.duitang.com/uploads/item/201407/27/20140727202737_sZLAX.jpeg", "http://img5.duitang.com/uploads/item/201407/27/20140727202737_sZLAX.jpeg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664940_9893.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647899_2806.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664940_3308.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647798_4500.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664927_3920.png", "http://img.my.csdn.net/uploads/201701/17/1484647897_1367.png"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664926_8360.png", "http://img.my.csdn.net/uploads/201701/17/1484650736_2101.png"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664926_6184.png", "http://img.my.csdn.net/uploads/201701/17/1484647701_9893.png"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664925_8382.png", "http://img.my.csdn.net/uploads/201701/17/1484650700_2514.png"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664925_2087.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647930_5139.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664777_5730.png", "http://img.my.csdn.net/uploads/201701/17/1484647929_8108.png"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647897_1978.jpg"));
+
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664940_9893.jpg");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664940_3308.jp");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664927_3920.pn");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664926_8360.pn");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664926_6184.pn");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664925_8382.pn");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664925_2087.jp");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664777_5730.pn");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jp");
+
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647899_2806.jpg");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647798_4500.jpg");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647897_1367.png");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484650736_2101.png");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647701_9893.png");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484650700_2514.png");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647930_5139.jpg");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647929_8108.png");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647897_1978.jpg");
     }
 
 
@@ -94,13 +121,23 @@ public class TwoActivity extends AppCompatActivity {
         });
     }
 
+
+    private ArrayList<ImageBean> getIvs(int max) {
+        ArrayList<ImageBean> imageBeen = new ArrayList<>();
+        for (int i = 0; i < amendPosition(max); i++) {
+            ImageAdapter.ViewHolder vh = (ImageAdapter.ViewHolder) recyclerView.findViewHolderForLayoutPosition(i);
+            if (vh != null) {
+                imageBeen.add(new ImageBean((ImageView) vh.itemView.findViewById(R.id.ivImg)));
+            }
+        }
+        return imageBeen;
+    }
+
     int amendPosition(int previewPosition) {
         return Math.min(previewPosition, manager.findLastVisibleItemPosition());
     }
 
-
     private class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
-
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -130,7 +167,14 @@ public class TwoActivity extends AppCompatActivity {
                 ivImg.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        helper.startViewerActivity(v, IMG_URL_LIST, getAdapterPosition());
+                        Intent intent = new Intent(TwoActivity.this, ImageZoomActivity.class);
+                        intent.putExtra(IMAGE_VIEWS, getIvs(9));
+                        intent.putStringArrayListExtra(IMAGE_THUMB_URL, thumbUrl);
+                        intent.putStringArrayListExtra(IMAGE_URL, url);
+                        intent.putExtra(IMAGE_POSITION, getAdapterPosition());
+                        //默认位置为0 所以不传递 startPosition
+                        startActivity(intent);
+                        overridePendingTransition(0, 0);
                     }
                 });
             }

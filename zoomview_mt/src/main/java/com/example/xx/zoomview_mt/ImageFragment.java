@@ -92,10 +92,11 @@ public class ImageFragment extends Fragment {
         //创建imageView位置与前页面相同
         createImageView();
         //缩略图位置在fragment正中间
-//        beThumbView();
+        //beThumbView();
         //变换中变成全图
         beFullView();
     }
+
 
     /**
      * 获取数据
@@ -136,7 +137,6 @@ public class ImageFragment extends Fragment {
      * 缩略图变化
      */
     private void beThumbView() {
-        progress.setVisibility(View.VISIBLE);
         ImageBean afterImageBean = originImageBean.clone();
         afterImageBean.translationX = mWidth / 2 - originImageBean.width / 2;
         afterImageBean.translationY = mHeight / 2 - originImageBean.height / 2;
@@ -148,8 +148,9 @@ public class ImageFragment extends Fragment {
 
 
     private void beFullView() {
+        progress.setVisibility(View.VISIBLE);
         Picasso.with(getActivity())
-                .load(url)
+                .load(thumbUrl)
                 .into(new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -177,17 +178,40 @@ public class ImageFragment extends Fragment {
                             playAnim(originImageBean, targetImageBean, STATE_FULL);
                             isBeFull = true;
                         }
+
                     }
 
                     @Override
                     public void onBitmapFailed(Drawable errorDrawable) {
-                        notifyItemChangedState(true, false);
 
                     }
 
                     @Override
                     public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        notifyItemChangedState(false, image.getDrawable() == null);
+                    }
+                });
+
+    }
+
+
+    private void showHDImage() {
+        Picasso.with(getActivity())
+                .load(url)
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        image.setImageBitmap(bitmap);
+                        progress.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+                        image.setImageDrawable(errorDrawable);
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        image.setImageDrawable(placeHolderDrawable);
                     }
                 });
     }
@@ -199,9 +223,6 @@ public class ImageFragment extends Fragment {
         } else {
             progress.setVisibility(View.GONE);
         }
-//        ImageView errorView = (ImageView) itemView.getChildAt(2);
-//        errorView.setAlpha(1f);
-//        errorView.setVisibility(error ? View.VISIBLE : View.GONE);
     }
 
 
@@ -225,7 +246,7 @@ public class ImageFragment extends Fragment {
      * @param currentItem
      */
     public void close(int currentTY, int currentItem) {
-        ImageBean beforeImageBean = targetImageBean.clone();
+        ImageBean beforeImageBean = targetImageBean == null ? currentImageBean.clone() : targetImageBean.clone();
         beforeImageBean.translationY += currentTY;
         ImageBean afterImageBean = imageViewList.get(currentItem);
         playAnim(beforeImageBean, afterImageBean, STATE_CLOSE);
@@ -274,6 +295,11 @@ public class ImageFragment extends Fragment {
                             getActivity().finish();
                             getActivity().overridePendingTransition(0, 0);
                         }
+                        break;
+                    case STATE_FULL:
+                        showHDImage();
+                        break;
+                    default:
                         break;
                 }
             }

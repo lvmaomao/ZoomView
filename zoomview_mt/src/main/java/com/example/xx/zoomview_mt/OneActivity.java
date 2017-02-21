@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.yy.www.libs.helper.TransitionSingleHelper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,9 +21,7 @@ import static com.example.xx.zoomview_mt.ImageZoomActivity.IMAGE_VIEWS;
  * Created by xx on 2016/9/11.
  */
 public class OneActivity extends AppCompatActivity {
-    TransitionSingleHelper t;
     ImageView ivShow;
-    //    String url = "http://img.bimg.126.net/photo/K2y0zX93ZxNz84KkysxCfA==/301741175050608631.jpg";
     List<ImageBean> ivs = new ArrayList<>();
     List<String> url = new ArrayList<>();
     List<String> thumbUrl = new ArrayList<>();
@@ -40,15 +37,9 @@ public class OneActivity extends AppCompatActivity {
                 .load("http://img.my.csdn.net/uploads/201701/17/1484647899_2806.jpg")
                 .into(ivShow);
 
-//        t = new TransitionManager(OneActivity.this).getSingle();
-//        t.setAnim_type(TransitionConstant.Type.TYPE_HAVE_ANIM);
-
-
         ivShow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                t.startViewerActivity(v, new ZoomBean(R.mipmap.ic_launcher, R.mipmap.ic_launcher));
-
                 ivs.add(new ImageBean(ivShow));
                 url.add("http://img.my.csdn.net/uploads/201701/06/1483664940_9893.jpg");
                 thumbUrl.add("http://img.my.csdn.net/uploads/201701/17/1484647899_2806.jpg");
@@ -59,7 +50,7 @@ public class OneActivity extends AppCompatActivity {
                 intent.putStringArrayListExtra(IMAGE_URL, (ArrayList<String>) url);
                 //默认位置为0 所以不传递 startPosition
                 startActivity(intent);
-                overridePendingTransition(0,0);
+                overridePendingTransition(0, 0);
             }
         });
     }
