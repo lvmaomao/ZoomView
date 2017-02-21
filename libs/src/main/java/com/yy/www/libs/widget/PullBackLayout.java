@@ -104,31 +104,28 @@ public class PullBackLayout extends FrameLayout {
             if (PullBackLayout.this.callback != null) {
                 PullBackLayout.this.callback.onPullStart();
             }
-
         }
 
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             if (PullBackLayout.this.callback != null) {
-                PullBackLayout.this.callback.onPull((float) top / (float) PullBackLayout.this.getHeight());
+                float ty = (float) top / (float) PullBackLayout.this.getHeight();
+                PullBackLayout.this.callback.onPull(ty);
             }
-
         }
 
         public void onViewReleased(View releasedChild, float xvel, float yvel) {
             int slop = dragDismissDistance;
             if (Math.abs(releasedChild.getTop()) >= slop) {
                 if (PullBackLayout.this.callback != null) {
-                    PullBackLayout.this.callback.onPullComplete();
+                    PullBackLayout.this.callback.onPullComplete(releasedChild.getTop());
                 }
             } else {
                 if (PullBackLayout.this.callback != null) {
                     PullBackLayout.this.callback.onPullCancel();
                 }
-
                 PullBackLayout.this.dragger.settleCapturedViewAt(0, 0);
                 PullBackLayout.this.invalidate();
             }
-
         }
     }
 
@@ -139,6 +136,6 @@ public class PullBackLayout extends FrameLayout {
 
         void onPullCancel();
 
-        void onPullComplete();
+        void onPullComplete(int top);
     }
 }

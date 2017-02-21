@@ -157,7 +157,7 @@ public class ViewerActivity<T> extends AppCompatActivity implements PullBackLayo
     }
 
     @Override
-    public void onPullComplete() {
+    public void onPullComplete(int top) {
         closeAct();
     }
 

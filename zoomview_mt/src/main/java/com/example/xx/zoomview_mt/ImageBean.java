@@ -9,15 +9,16 @@ import android.widget.ImageView;
  * 传递图片基本信息
  */
 
-public class ImageBean implements Parcelable {
-    int width;
-    int height;
+public class ImageBean implements Parcelable, Cloneable {
+    float width;
+    float height;
     float translationX;
     float translationY;
     float scaleX;
     float scaleY;
 
-    public ImageBean(){}
+    public ImageBean() {
+    }
 
     public ImageBean(ImageView imageView) {
         int[] location = new int[2];
@@ -26,8 +27,22 @@ public class ImageBean implements Parcelable {
         this.width = imageView.getWidth();
         this.translationX = location[0];
         this.translationY = location[1]; //全屏状态下可能需要减掉一个状态栏高度;暂时未处理
+        this.scaleX = imageView.getScaleX();
+        this.scaleY = imageView.getScaleY();
 
     }
+
+    public ImageBean clone() {
+        Object o = null;
+        try {
+            o = super.clone();//Object 中的clone()识别出你要复制的是哪一个对象。
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return (ImageBean) o;
+    }
+
+
     @Override
     public int describeContents() {
         return 0;
@@ -35,8 +50,8 @@ public class ImageBean implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.width);
-        dest.writeInt(this.height);
+        dest.writeFloat(this.width);
+        dest.writeFloat(this.height);
         dest.writeFloat(this.translationX);
         dest.writeFloat(this.translationY);
         dest.writeFloat(this.scaleX);
@@ -44,10 +59,9 @@ public class ImageBean implements Parcelable {
     }
 
 
-
     protected ImageBean(Parcel in) {
-        this.width = in.readInt();
-        this.height = in.readInt();
+        this.width = in.readFloat();
+        this.height = in.readFloat();
         this.translationX = in.readFloat();
         this.translationY = in.readFloat();
         this.scaleX = in.readFloat();

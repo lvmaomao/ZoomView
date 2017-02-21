@@ -1,5 +1,6 @@
 package com.example.xx.zoomview_mt;
 
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -29,14 +30,14 @@ public class ImageFragment extends Fragment {
 
     private static final int ANIM_DURATION = 300;
 
+    private static final int STATE_THUMB = 0;
+    private static final int STATE_FULL = 1;
+    private static final int STATE_CLOSE = 2;
+
     /**
      * 动画
      */
-    private ValueAnimator thumbAnim;
-    private ValueAnimator fullAnim;
-    private ValueAnimator backAnim;
     private ValueAnimator animator = null;
-
 
     /**
      * views
@@ -58,10 +59,12 @@ public class ImageFragment extends Fragment {
     private ImageBean originImageBean;
     private ImageBean currentImageBean;
     private ImageBean targetImageBean;
-    private int timeLeft; // beThumb的剩余时间
     private int statusBarHeight;
     private int mWidth;
     private int mHeight;
+
+    boolean isBeThumb = false;
+    boolean isBeFull = false;
 
     public static ImageFragment newInstance(Bundle args) {
         ImageFragment fragment = new ImageFragment();
@@ -89,9 +92,9 @@ public class ImageFragment extends Fragment {
         //创建imageView位置与前页面相同
         createImageView();
         //缩略图位置在fragment正中间
-        beThumbView();
+//        beThumbView();
         //变换中变成全图
-//        beFullView();
+        beFullView();
     }
 
     /**
@@ -119,8 +122,8 @@ public class ImageFragment extends Fragment {
 
     private void createImageView() {
         FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) image.getLayoutParams();
-        flp.width = originImageBean.width;
-        flp.height = originImageBean.height;
+        flp.width = (int) originImageBean.width;
+        flp.height = (int) originImageBean.height;
         image.setLayoutParams(flp);
         image.setTranslationX(originImageBean.translationX);
         image.setTranslationY(originImageBean.translationY);
@@ -134,65 +137,13 @@ public class ImageFragment extends Fragment {
      */
     private void beThumbView() {
         progress.setVisibility(View.VISIBLE);
-//        thumbAnim = ValueAnimator.ofFloat(0, 1).setDuration(ANIM_DURATION);
-//        final float targetX = mWidth / 2 - originImageBean.width / 2;
-//        final float targetY = mHeight / 2 - originImageBean.height / 2;
-//        currentImageBean = originImageBean;
-//        thumbAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//                float p = (float) animation.getAnimatedValue();
-//                currentImageBean.translationX = originImageBean.translationX + (targetX - originImageBean.translationX) * p;
-//                currentImageBean.translationY = originImageBean.translationY + (targetY - originImageBean.translationY) * p;
-//                timeLeft = (int) (ANIM_DURATION - ANIM_DURATION * p);
-//                image.setTranslationX(currentImageBean.translationX);
-//                image.setTranslationY(currentImageBean.translationY);
-//                if (originImageBean.translationX != targetX) {
-//                    image.requestLayout();
-//                }
-//            }
-//        });
-//        thumbAnim.start();
-        ImageBean afterImageBean = originImageBean;
+        ImageBean afterImageBean = originImageBean.clone();
         afterImageBean.translationX = mWidth / 2 - originImageBean.width / 2;
         afterImageBean.translationY = mHeight / 2 - originImageBean.height / 2;
-        playAnim(originImageBean, afterImageBean);
-    }
-
-
-    private void playAnim(final ImageBean before, final ImageBean after) {
-        if (animator != null) {
-            animator.cancel();
-            animator = null;
+        if (!isBeThumb) {
+            playAnim(originImageBean, afterImageBean, STATE_THUMB);
+            isBeThumb = true;
         }
-        if (currentImageBean == null) {
-            currentImageBean = new ImageBean();
-        }
-        animator = ValueAnimator.ofFloat(0, 1).setDuration(ANIM_DURATION);
-        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                float p = (float) animation.getAnimatedValue();
-                image.setTranslationX(before.translationX + (after.translationX - before.translationX) * p);
-                image.setTranslationY(before.translationY + (after.translationY - before.translationY) * p);
-                image.setScaleX(before.scaleX + (after.scaleX - before.scaleX) * p);
-                image.setScaleY(before.scaleY + (after.scaleY - before.scaleY) * p);
-
-                currentImageBean.translationX = image.getTranslationX();
-                currentImageBean.translationY = image.getTranslationY();
-                currentImageBean.scaleX = image.getScaleX();
-                currentImageBean.scaleY = image.getScaleY();
-//                image.setRotation((before.rotation + (after.rotation - before.rotation) * p) % 360);
-//                image.setAlpha((before.alpha + (after.alpha - before.alpha) * p));
-                if (before.width != after.width && before.height != after.height
-                        && after.width != 0 && after.height != 0) {
-                    image.getLayoutParams().width = (int) (before.width + (after.width - before.width) * p);
-                    image.getLayoutParams().height = (int) (before.height + (after.height - before.height) * p);
-                    image.requestLayout();
-                }
-            }
-        });
-        animator.start();
     }
 
 
@@ -203,47 +154,29 @@ public class ImageFragment extends Fragment {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                         //获取真实的宽高比例
-                        targetImageBean = new ImageBean();
-                        targetImageBean.width = bitmap.getWidth();
-                        targetImageBean.height = bitmap.getHeight();
+                        targetImageBean = originImageBean.clone();
+                        int resourceImageWidth = bitmap.getWidth();
+                        int resourceImageHeight = bitmap.getHeight();
                         //宽 > 高
-                        if (targetImageBean.width * 1f / targetImageBean.height > mWidth * 1f / mHeight) {
+                        if (resourceImageWidth * 1f / resourceImageHeight > mWidth * 1f / mHeight) {
                             targetImageBean.width = mWidth;
-                            targetImageBean.height = (int) (targetImageBean.width * 1f / targetImageBean.width * targetImageBean.height);
+                            targetImageBean.height = (int) (targetImageBean.width * 1f / resourceImageWidth * resourceImageHeight);
                             targetImageBean.translationX = 0;
                             targetImageBean.translationY = (mHeight - targetImageBean.height) / 2;
-                            image.setTag(R.id.image_orientation, "horizontal");
                         } else {
                             //高 > 宽
                             targetImageBean.height = mHeight;
-                            targetImageBean.width = (int) (targetImageBean.height * 1f / targetImageBean.height * targetImageBean.width);
+                            targetImageBean.width = (int) (targetImageBean.height * 1f / resourceImageHeight * resourceImageWidth);
                             targetImageBean.translationY = 0;
                             targetImageBean.translationX = (mWidth - targetImageBean.width) / 2;
-                            image.setTag(R.id.image_orientation, "vertical");
                         }
                         image.setImageBitmap(bitmap);
                         notifyItemChangedState(false, false);
 
-//                        if (thumbAnim != null && thumbAnim.isRunning()) {
-//                            thumbAnim.cancel();
-//                        }
-                        fullAnim = ValueAnimator.ofFloat(0, 1).setDuration(Math.max(timeLeft, 150)); //最短150毫秒
-                        fullAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animation) {
-                                float p = (float) animation.getAnimatedValue();
-                                image.setTranslationX(currentImageBean.translationX + (targetImageBean.translationX - currentImageBean.translationX) * p);
-                                image.setTranslationY(currentImageBean.translationY + (targetImageBean.translationY - currentImageBean.translationY) * p);
-                                if (currentImageBean.width != targetImageBean.width && currentImageBean.height != targetImageBean.height
-                                        && targetImageBean.width != 0 && targetImageBean.height != 0) {
-                                    image.getLayoutParams().width = (int) (currentImageBean.width + (targetImageBean.width - currentImageBean.width) * p);
-                                    image.getLayoutParams().height = (int) (currentImageBean.height + (targetImageBean.height - currentImageBean.height) * p);
-                                    image.requestLayout();
-                                }
-                            }
-                        });
-                        fullAnim.start();
-
+                        if (!isBeFull) {
+                            playAnim(originImageBean, targetImageBean, STATE_FULL);
+                            isBeFull = true;
+                        }
                     }
 
                     @Override
@@ -258,6 +191,7 @@ public class ImageFragment extends Fragment {
                     }
                 });
     }
+
 
     void notifyItemChangedState(boolean loading, boolean error) {
         if (loading) {
@@ -290,36 +224,71 @@ public class ImageFragment extends Fragment {
      *
      * @param currentItem
      */
-    public void close(int currentItem) {
+    public void close(int currentTY, int currentItem) {
+        ImageBean beforeImageBean = targetImageBean.clone();
+        beforeImageBean.translationY += currentTY;
+        ImageBean afterImageBean = imageViewList.get(currentItem);
+        playAnim(beforeImageBean, afterImageBean, STATE_CLOSE);
+    }
 
-        final ImageBean pullImageBean = targetImageBean;
-        pullImageBean.translationY = image.getTranslationY();
-        originImageBean = imageViewList.get(currentItem);
-
-        if (fullAnim.isRunning()) {
-            fullAnim.cancel();
+    private synchronized void playAnim(final ImageBean before, final ImageBean after, final int state) {
+        if (animator != null) {
+            animator.cancel();
         }
-
-        backAnim = ValueAnimator.ofFloat(0, 1).setDuration(ANIM_DURATION); //最短150毫秒
-        backAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        if (currentImageBean == null) {
+            currentImageBean = originImageBean.clone();
+        }
+        animator = ValueAnimator.ofFloat(0, 1).setDuration(ANIM_DURATION);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float p = (float) animation.getAnimatedValue();
-                image.setTranslationX(pullImageBean.translationX + (originImageBean.translationX - pullImageBean.translationX) * p);
-                image.setTranslationY(pullImageBean.translationY + (originImageBean.translationY - pullImageBean.translationY) * p);
-                if (pullImageBean.width != targetImageBean.width && pullImageBean.height != targetImageBean.height
-                        && targetImageBean.width != 0 && targetImageBean.height != 0) {
-                    image.getLayoutParams().width = (int) (pullImageBean.width + (originImageBean.width - pullImageBean.width) * p);
-                    image.getLayoutParams().height = (int) (pullImageBean.height + (originImageBean.height - pullImageBean.height) * p);
+                image.setTranslationX(before.translationX + (after.translationX - before.translationX) * p);
+                image.setTranslationY(before.translationY + (after.translationY - before.translationY) * p);
+                image.setScaleX(before.scaleX + (after.scaleX - before.scaleX) * p);
+                image.setScaleY(before.scaleY + (after.scaleY - before.scaleY) * p);
+
+                currentImageBean.translationX = image.getTranslationX();
+                currentImageBean.translationY = image.getTranslationY();
+                currentImageBean.scaleX = image.getScaleX();
+                currentImageBean.scaleY = image.getScaleY();
+                if (before.width != after.width && before.height != after.height
+                        && after.width != 0 && after.height != 0) {
+                    image.getLayoutParams().width = (int) (before.width + (after.width - before.width) * p);
+                    image.getLayoutParams().height = (int) (before.height + (after.height - before.height) * p);
                     image.requestLayout();
-                }
-                if (getActivity() != null && p == 1) {
-                    getActivity().finish();
                 }
             }
         });
-        backAnim.start();
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
 
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                switch (state) {
+                    case STATE_CLOSE:
+                        if (getActivity() != null) {
+                            getActivity().finish();
+                            getActivity().overridePendingTransition(0, 0);
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator.start();
     }
 
 

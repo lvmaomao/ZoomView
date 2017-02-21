@@ -57,9 +57,9 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
     private PullBackLayout puller;
 
 
-    private List<ImageBean> imageViewList = new ArrayList<>();  // imageView引用集合 传递方需要控制数量。
-    private List<String> thumbUrlList = new ArrayList<>(); //缩略图集合
-    private List<String> urlList = new ArrayList<>(); //原图集合
+    private List<ImageBean> imageViewList;  // imageView引用集合 传递方需要控制数量。
+    private List<String> thumbUrlList; //缩略图集合
+    private List<String> urlList; //原图集合
 
     private int startPosition;
 
@@ -83,10 +83,10 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
      * @param intent 携带数据的intent
      */
     private void receiveIntent(@NonNull Intent intent) {
-        if (intent != null && intent.hasExtra(IMAGE_VIEWS)) {
+        if (intent.hasExtra(IMAGE_VIEWS)) {
             imageViewList = (List<ImageBean>) intent.getSerializableExtra(IMAGE_VIEWS);
-            thumbUrlList = (List<String>) intent.getSerializableExtra(IMAGE_THUMB_URL);
-            urlList = (List<String>) intent.getSerializableExtra(IMAGE_URL);
+            thumbUrlList = intent.getStringArrayListExtra(IMAGE_THUMB_URL);
+            urlList = intent.getStringArrayListExtra(IMAGE_URL);
             startPosition = intent.getIntExtra(IMAGE_POSITION, 0);
         } else {
             throw new NullPointerException("please intent imageView and position");
@@ -135,8 +135,8 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
     }
 
     @Override
-    public void onPullComplete() {
-        closeAct();
+    public void onPullComplete(int top) {
+        closeAct(top);
     }
 
     ////////////////////////////////////////////////////
@@ -151,7 +151,11 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
     }
 
     private void closeAct() {
-        getCurrentFragment().close(viewPager.getCurrentItem());
+        closeAct(0);
+    }
+
+    private void closeAct(int ty) {
+        getCurrentFragment().close(ty, viewPager.getCurrentItem());
     }
 
     /**
