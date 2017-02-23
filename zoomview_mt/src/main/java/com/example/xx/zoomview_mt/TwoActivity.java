@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,7 @@ public class TwoActivity extends AppCompatActivity {
     private GridLayoutManager manager;
     private ArrayList<String> thumbUrl = new ArrayList<>();
     private ArrayList<String> url = new ArrayList<>();
+    ImageAdapter adapter;
 
 
     private List<ZoomBean<String>> IMG_URL_LIST = new ArrayList<>();
@@ -59,7 +61,8 @@ public class TwoActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.nineGridImageView);
         manager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(manager);
-        recyclerView.setAdapter(new ImageAdapter());
+        adapter = new ImageAdapter();
+        recyclerView.setAdapter(adapter);
 
 
     }
@@ -77,14 +80,14 @@ public class TwoActivity extends AppCompatActivity {
         IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647897_1978.jpg"));
 
         thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664940_9893.jpg");
-        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664940_3308.jp");
-        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664927_3920.pn");
-        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664926_8360.pn");
-        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664926_6184.pn");
-        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664925_8382.pn");
-        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664925_2087.jp");
-        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664777_5730.pn");
-        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jp");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664940_3308.jpg");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664927_3920.png");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664926_8360.png");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664926_6184.png");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664925_8382.png");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664925_2087.jpg");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664777_5730.png");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jpg");
 
         url.add("http://img.my.csdn.net/uploads/201701/17/1484647899_2806.jpg");
         url.add("http://img.my.csdn.net/uploads/201701/17/1484647798_4500.jpg");
@@ -122,6 +125,7 @@ public class TwoActivity extends AppCompatActivity {
     }
 
 
+    //取图片 1
     private ArrayList<ImageBean> getIvs(int max) {
         ArrayList<ImageBean> imageBeen = new ArrayList<>();
         for (int i = 0; i < amendPosition(max); i++) {
@@ -130,6 +134,23 @@ public class TwoActivity extends AppCompatActivity {
                 imageBeen.add(new ImageBean((ImageView) vh.itemView.findViewById(R.id.ivImg)));
             }
         }
+        return imageBeen;
+    }
+
+    private ArrayList<ImageBean> getIvs2() {
+        ArrayList<ImageBean> imageBeen = new ArrayList<>();
+        for (int i = 0; i < adapter.getItemCount(); i++) {
+            View itemView = manager.findViewByPosition(i);
+            if (itemView != null) {
+                ImageView iv = (ImageView) itemView.findViewById(R.id.ivImg);
+                imageBeen.add(new ImageBean(iv));
+                Log.e("getIvs2", "getIvs2 not null : " + i);
+
+            } else {
+                Log.e("getIvs2", "getIvs2 null : " + i);
+            }
+        }
+
         return imageBeen;
     }
 
@@ -168,7 +189,7 @@ public class TwoActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(TwoActivity.this, ImageZoomActivity.class);
-                        intent.putExtra(IMAGE_VIEWS, getIvs(9));
+                        intent.putExtra(IMAGE_VIEWS, getIvs2());
                         intent.putStringArrayListExtra(IMAGE_THUMB_URL, thumbUrl);
                         intent.putStringArrayListExtra(IMAGE_URL, url);
                         intent.putExtra(IMAGE_POSITION, getAdapterPosition());

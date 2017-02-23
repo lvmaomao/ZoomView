@@ -3,7 +3,6 @@ package com.example.xx.zoomview_mt;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import com.yy.www.libs.widget.ConflictViewPager;
 import com.yy.www.libs.widget.PullBackLayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
@@ -25,14 +23,6 @@ import me.relex.circleindicator.CircleIndicator;
  */
 
 public class ImageZoomActivity extends AppCompatActivity implements PullBackLayout.Callback {
-    /**
-     * 以下是传递到fragment的信息;
-     */
-    public static final String THUMB_DATA = "thumb_data";
-    public static final String ORIGINAL_DATA = "original_data";
-    public static final String IMAGE_DATA = "image_data";
-    public static final String DATA_POSITION = "data_position";
-
     /**
      * 上个页面的imageView集合
      */
@@ -63,6 +53,19 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
 
     private int startPosition;
 
+    /**
+     * 是否已经播放过动画
+     */
+    public boolean isAnim = false;
+
+    public boolean isAnim() {
+        return isAnim;
+    }
+
+    public void setAnim(boolean anim) {
+        isAnim = anim;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,7 +87,7 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
      */
     private void receiveIntent(@NonNull Intent intent) {
         if (intent.hasExtra(IMAGE_VIEWS)) {
-            imageViewList = (List<ImageBean>) intent.getSerializableExtra(IMAGE_VIEWS);
+            imageViewList = intent.getParcelableArrayListExtra(IMAGE_VIEWS);
             thumbUrlList = intent.getStringArrayListExtra(IMAGE_THUMB_URL);
             urlList = intent.getStringArrayListExtra(IMAGE_URL);
             startPosition = intent.getIntExtra(IMAGE_POSITION, 0);
@@ -114,8 +117,9 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
         adapter = new ImageAdapter();
         viewPager = (ConflictViewPager) findViewById(R.id.viewPager);
         indicator = (CircleIndicator) findViewById(com.yy.www.libs.R.id.indicator);
-        viewPager.setCurrentItem(startPosition);
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(0);
+        viewPager.setCurrentItem(startPosition);
         indicator.setViewPager(viewPager);
     }
 
@@ -155,7 +159,9 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
     }
 
     private void closeAct(int ty) {
-        getCurrentFragment().close(ty, viewPager.getCurrentItem());
+        setAnim(false);
+        int closePosition = viewPager.getCurrentItem();
+        getCurrentFragment().close(ty, imageViewList.get(closePosition));
     }
 
     /**
@@ -165,6 +171,10 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
      */
     public ImageFragment getCurrentFragment() {
         return (ImageFragment) adapter.instantiateItem(viewPager, viewPager.getCurrentItem());
+    }
+
+    public String getStartThumbUrl() {
+        return thumbUrlList.get(startPosition);
     }
 
 
@@ -178,10 +188,9 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
         public Fragment getItem(int position) {
             Bundle arguments = new Bundle();
             //获取当前用户的基本信息 ；传递到下个页面，
-            arguments.putStringArrayList(THUMB_DATA, (ArrayList<String>) thumbUrlList);
-            arguments.putStringArrayList(ORIGINAL_DATA, (ArrayList<String>) urlList);
-            arguments.putParcelableArrayList(IMAGE_DATA, (ArrayList<? extends Parcelable>) imageViewList);
-            arguments.putInt(DATA_POSITION, position);
+            arguments.putParcelable("start_image", imageViewList.get(position));
+            arguments.putString("url", urlList.get(position));
+            arguments.putString("thumbUrl", thumbUrlList.get(position));
 
             Fragment fragment = ImageFragment.newInstance(arguments);
             fragment.setArguments(arguments);

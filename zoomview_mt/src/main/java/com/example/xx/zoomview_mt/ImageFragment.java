@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,6 @@ import android.widget.ProgressBar;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import java.util.List;
 
 /**
  * Created by yangyu on 2017/2/16.
@@ -49,11 +49,6 @@ public class ImageFragment extends Fragment {
     /**
      * data
      */
-    List<ImageBean> imageViewList;  // imageView引用集合 传递方需要控制数量。
-    List<String> thumbUrlList; //缩略图集合
-    List<String> urlList; //原图集合
-    int position = 0;
-
     private String thumbUrl;
     private String url;
     private ImageBean originImageBean;
@@ -65,6 +60,14 @@ public class ImageFragment extends Fragment {
 
     boolean isBeThumb = false;
     boolean isBeFull = false;
+
+    ImageZoomActivity activity;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        activity = (ImageZoomActivity) context;
+    }
 
     public static ImageFragment newInstance(Bundle args) {
         ImageFragment fragment = new ImageFragment();
@@ -86,13 +89,19 @@ public class ImageFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.e("ImageFragment", "onViewCreated");
         image = (ImageView) rootView.findViewById(R.id.image);
         progress = (ProgressBar) rootView.findViewById(R.id.progress);
         getArgs();
         //创建imageView位置与前页面相同
-        createImageView();
+        if (thumbUrl.equals(activity.getStartThumbUrl())) {
+            createImageView(originImageBean);
+        }
+        Picasso.with(getActivity())
+                .load(thumbUrl)
+                .into(image);
         //缩略图位置在fragment正中间
-        //beThumbView();
+//        beThumbView();
         //变换中变成全图
         beFullView();
     }
@@ -103,34 +112,20 @@ public class ImageFragment extends Fragment {
      */
     private void getArgs() {
         Bundle bundle = getArguments();
-        thumbUrlList = bundle.getStringArrayList(ImageZoomActivity.THUMB_DATA);
-        urlList = bundle.getStringArrayList(ImageZoomActivity.ORIGINAL_DATA);
-        imageViewList = bundle.getParcelableArrayList(ImageZoomActivity.IMAGE_DATA);
-        position = bundle.getInt(ImageZoomActivity.DATA_POSITION);
+        url = bundle.getString("url");
+        thumbUrl = bundle.getString("thumbUrl");
+        originImageBean = bundle.getParcelable("start_image");
 
-        if (thumbUrlList != null && urlList != null && imageViewList != null) {
-            originImageBean = imageViewList.get(position);
-            thumbUrl = thumbUrlList.get(position);
-            url = urlList.get(position);
-        } else {
-            throw new NullPointerException("data not be null");
-        }
-
-        if (originImageBean != null) {
-            originImageBean.translationY -= statusBarHeight;
-        }
+        currentImageBean = originImageBean.clone();
     }
 
-    private void createImageView() {
+    private void createImageView(ImageBean bean) {
         FrameLayout.LayoutParams flp = (FrameLayout.LayoutParams) image.getLayoutParams();
-        flp.width = (int) originImageBean.width;
-        flp.height = (int) originImageBean.height;
+        flp.width = (int) bean.width;
+        flp.height = (int) bean.height;
         image.setLayoutParams(flp);
-        image.setTranslationX(originImageBean.translationX);
-        image.setTranslationY(originImageBean.translationY);
-        Picasso.with(getActivity())
-                .load(thumbUrl)
-                .into(image);
+        image.setTranslationX(bean.translationX);
+        image.setTranslationY(bean.translationY);
     }
 
     /**
@@ -174,11 +169,12 @@ public class ImageFragment extends Fragment {
                         image.setImageBitmap(bitmap);
                         notifyItemChangedState(false, false);
 
-                        if (!isBeFull) {
+                        if (activity != null && !activity.isAnim && thumbUrl.equals(activity.getStartThumbUrl())) { //播放动画 达到指定大小
                             playAnim(originImageBean, targetImageBean, STATE_FULL);
-                            isBeFull = true;
+                            activity.setAnim(true);
+                        } else { //不播放动画,直接达到指定位置
+                            createImageView(targetImageBean);
                         }
-
                     }
 
                     @Override
@@ -242,14 +238,11 @@ public class ImageFragment extends Fragment {
 
     /**
      * 关闭方法
-     *
-     * @param currentItem
      */
-    public void close(int currentTY, int currentItem) {
+    public void close(int currentTY, ImageBean imageBean) {
         ImageBean beforeImageBean = targetImageBean == null ? currentImageBean.clone() : targetImageBean.clone();
         beforeImageBean.translationY += currentTY;
-        ImageBean afterImageBean = imageViewList.get(currentItem);
-        playAnim(beforeImageBean, afterImageBean, STATE_CLOSE);
+        playAnim(beforeImageBean, imageBean, STATE_CLOSE);
     }
 
     private synchronized void playAnim(final ImageBean before, final ImageBean after, final int state) {
