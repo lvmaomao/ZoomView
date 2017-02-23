@@ -115,8 +115,9 @@ public class ImageFragment extends Fragment {
         url = bundle.getString("url");
         thumbUrl = bundle.getString("thumbUrl");
         originImageBean = bundle.getParcelable("start_image");
-
-        currentImageBean = originImageBean.clone();
+        if (originImageBean != null) {
+            currentImageBean = originImageBean.clone();
+        }
     }
 
     private void createImageView(ImageBean bean) {
@@ -150,6 +151,9 @@ public class ImageFragment extends Fragment {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                         //获取真实的宽高比例
+                        if (originImageBean == null) {
+                            targetImageBean = new ImageBean();
+                        }
                         targetImageBean = originImageBean.clone();
                         int resourceImageWidth = bitmap.getWidth();
                         int resourceImageHeight = bitmap.getHeight();
@@ -169,7 +173,7 @@ public class ImageFragment extends Fragment {
                         image.setImageBitmap(bitmap);
                         notifyItemChangedState(false, false);
 
-                        if (activity != null && !activity.isAnim && thumbUrl.equals(activity.getStartThumbUrl())) { //播放动画 达到指定大小
+                        if (activity != null && originImageBean != null && !activity.isAnim && thumbUrl.equals(activity.getStartThumbUrl())) { //播放动画 达到指定大小
                             playAnim(originImageBean, targetImageBean, STATE_FULL);
                             activity.setAnim(true);
                         } else { //不播放动画,直接达到指定位置
@@ -242,6 +246,13 @@ public class ImageFragment extends Fragment {
     public void close(int currentTY, ImageBean imageBean) {
         ImageBean beforeImageBean = targetImageBean == null ? currentImageBean.clone() : targetImageBean.clone();
         beforeImageBean.translationY += currentTY;
+        if (imageBean == null) {
+            imageBean = new ImageBean();
+            imageBean.translationX = -27;
+            imageBean.translationY = 1645;
+            imageBean.scaleX = 1.5f;
+            imageBean.scaleY = 1.5f;
+        }
         playAnim(beforeImageBean, imageBean, STATE_CLOSE);
     }
 

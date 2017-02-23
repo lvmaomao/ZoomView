@@ -188,7 +188,9 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
         public Fragment getItem(int position) {
             Bundle arguments = new Bundle();
             //获取当前用户的基本信息 ；传递到下个页面，
-            arguments.putParcelable("start_image", imageViewList.get(position));
+            if(position == startPosition){
+                arguments.putParcelable("start_image", imageViewList.get(position));
+            }
             arguments.putString("url", urlList.get(position));
             arguments.putString("thumbUrl", thumbUrlList.get(position));
 
