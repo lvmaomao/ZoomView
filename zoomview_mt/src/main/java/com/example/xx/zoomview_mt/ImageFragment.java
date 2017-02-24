@@ -30,7 +30,6 @@ public class ImageFragment extends Fragment {
 
     private static final int ANIM_DURATION = 300;
 
-    private static final int STATE_THUMB = 0;
     private static final int STATE_FULL = 1;
     private static final int STATE_CLOSE = 2;
 
@@ -54,12 +53,8 @@ public class ImageFragment extends Fragment {
     private ImageBean originImageBean;
     private ImageBean currentImageBean;
     private ImageBean targetImageBean;
-    private int statusBarHeight;
     private int mWidth;
     private int mHeight;
-
-    boolean isBeThumb = false;
-    boolean isBeFull = false;
 
     ImageZoomActivity activity;
 
@@ -79,7 +74,6 @@ public class ImageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_image, container, false);
-        statusBarHeight = calcStatusBarHeight(getActivity());
         DisplayMetrics dm = getResources().getDisplayMetrics();
         mWidth = dm.widthPixels; // 屏幕宽（像素，如：px）
         mHeight = dm.heightPixels; // 屏幕高（像素，如：px）
@@ -94,14 +88,14 @@ public class ImageFragment extends Fragment {
         progress = (ProgressBar) rootView.findViewById(R.id.progress);
         getArgs();
         //创建imageView位置与前页面相同
-        if (thumbUrl.equals(activity.getStartThumbUrl())) {
+        if (originImageBean != null) {
             createImageView(originImageBean);
+            Picasso.with(getActivity())
+                    .load(thumbUrl)
+                    .into(image);
         }
-        Picasso.with(getActivity())
-                .load(thumbUrl)
-                .into(image);
         //缩略图位置在fragment正中间
-//        beThumbView();
+        //beThumbView();
         //变换中变成全图
         beFullView();
     }
@@ -129,20 +123,6 @@ public class ImageFragment extends Fragment {
         image.setTranslationY(bean.translationY);
     }
 
-    /**
-     * 缩略图变化
-     */
-    private void beThumbView() {
-        ImageBean afterImageBean = originImageBean.clone();
-        afterImageBean.translationX = mWidth / 2 - originImageBean.width / 2;
-        afterImageBean.translationY = mHeight / 2 - originImageBean.height / 2;
-        if (!isBeThumb) {
-            playAnim(originImageBean, afterImageBean, STATE_THUMB);
-            isBeThumb = true;
-        }
-    }
-
-
     private void beFullView() {
         progress.setVisibility(View.VISIBLE);
         Picasso.with(getActivity())
@@ -153,8 +133,9 @@ public class ImageFragment extends Fragment {
                         //获取真实的宽高比例
                         if (originImageBean == null) {
                             targetImageBean = new ImageBean();
+                        } else {
+                            targetImageBean = originImageBean.clone();
                         }
-                        targetImageBean = originImageBean.clone();
                         int resourceImageWidth = bitmap.getWidth();
                         int resourceImageHeight = bitmap.getHeight();
                         //宽 > 高
@@ -244,24 +225,19 @@ public class ImageFragment extends Fragment {
      * 关闭方法
      */
     public void close(int currentTY, ImageBean imageBean) {
+        //从 目标位置或者变化位置获取启动动画的初始位置
         ImageBean beforeImageBean = targetImageBean == null ? currentImageBean.clone() : targetImageBean.clone();
+        //对 其实动画的位置进行y轴修正
         beforeImageBean.translationY += currentTY;
-        if (imageBean == null) {
-            imageBean = new ImageBean();
-            imageBean.translationX = -27;
-            imageBean.translationY = 1645;
-            imageBean.scaleX = 1.5f;
-            imageBean.scaleY = 1.5f;
-        }
         playAnim(beforeImageBean, imageBean, STATE_CLOSE);
     }
 
-    private synchronized void playAnim(final ImageBean before, final ImageBean after, final int state) {
+    private  void playAnim(final ImageBean before, final ImageBean after, final int state) {
         if (animator != null) {
             animator.cancel();
         }
         if (currentImageBean == null) {
-            currentImageBean = originImageBean.clone();
+            currentImageBean = targetImageBean.clone();
         }
         animator = ValueAnimator.ofFloat(0, 1).setDuration(ANIM_DURATION);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -272,6 +248,7 @@ public class ImageFragment extends Fragment {
                 image.setTranslationY(before.translationY + (after.translationY - before.translationY) * p);
                 image.setScaleX(before.scaleX + (after.scaleX - before.scaleX) * p);
                 image.setScaleY(before.scaleY + (after.scaleY - before.scaleY) * p);
+                image.setAlpha(before.alpha + (after.alpha - before.alpha) * p);
 
                 currentImageBean.translationX = image.getTranslationX();
                 currentImageBean.translationY = image.getTranslationY();
@@ -285,6 +262,7 @@ public class ImageFragment extends Fragment {
                 }
             }
         });
+
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {

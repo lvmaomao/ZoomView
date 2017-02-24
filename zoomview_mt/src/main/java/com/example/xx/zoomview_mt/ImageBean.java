@@ -14,8 +14,9 @@ public class ImageBean implements Parcelable, Cloneable {
     float height;
     float translationX;
     float translationY;
-    float scaleX;
-    float scaleY;
+    float scaleX = 1.0f;
+    float scaleY = 1.0f;
+    float alpha = 1.0f;
 
     public ImageBean() {
     }
@@ -56,6 +57,7 @@ public class ImageBean implements Parcelable, Cloneable {
         dest.writeFloat(this.translationY);
         dest.writeFloat(this.scaleX);
         dest.writeFloat(this.scaleY);
+        dest.writeFloat(this.alpha);
     }
 
 
@@ -66,6 +68,7 @@ public class ImageBean implements Parcelable, Cloneable {
         this.translationY = in.readFloat();
         this.scaleX = in.readFloat();
         this.scaleY = in.readFloat();
+        this.alpha = in.readFloat();
     }
 
     public static final Parcelable.Creator<ImageBean> CREATOR = new Parcelable.Creator<ImageBean>() {
