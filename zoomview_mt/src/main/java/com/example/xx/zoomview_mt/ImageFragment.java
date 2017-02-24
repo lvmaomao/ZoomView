@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -27,6 +28,8 @@ import com.squareup.picasso.Target;
  */
 
 public class ImageFragment extends Fragment {
+
+    public static final String TAG = "ImageFragment";
 
     private static final int ANIM_DURATION = 300;
 
@@ -92,11 +95,21 @@ public class ImageFragment extends Fragment {
             createImageView(originImageBean);
             Picasso.with(getActivity())
                     .load(thumbUrl)
-                    .into(image);
+                    .into(image, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            beFullView();
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+            Log.e(TAG, "originImageBean is not null");
+        } else {
+            Log.e(TAG, "originImageBean is null");
         }
-        //缩略图位置在fragment正中间
-        //beThumbView();
-        //变换中变成全图
         beFullView();
     }
 
@@ -225,6 +238,9 @@ public class ImageFragment extends Fragment {
      * 关闭方法
      */
     public void close(int currentTY, ImageBean imageBean) {
+//        if (currentImageBean == null && currentImageBean == null) {
+//            return;
+//        }
         //从 目标位置或者变化位置获取启动动画的初始位置
         ImageBean beforeImageBean = targetImageBean == null ? currentImageBean.clone() : targetImageBean.clone();
         //对 其实动画的位置进行y轴修正
@@ -232,7 +248,7 @@ public class ImageFragment extends Fragment {
         playAnim(beforeImageBean, imageBean, STATE_CLOSE);
     }
 
-    private  void playAnim(final ImageBean before, final ImageBean after, final int state) {
+    private void playAnim(final ImageBean before, final ImageBean after, final int state) {
         if (animator != null) {
             animator.cancel();
         }

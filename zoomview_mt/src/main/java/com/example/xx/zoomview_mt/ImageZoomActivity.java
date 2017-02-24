@@ -1,5 +1,7 @@
 package com.example.xx.zoomview_mt;
 
+import android.animation.TypeEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import com.yy.www.libs.widget.ConflictViewPager;
 import com.yy.www.libs.widget.PullBackLayout;
@@ -16,7 +19,6 @@ import com.yy.www.libs.widget.PullBackLayout;
 import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
-
 
 /**
  * Created by yangyu on 2017/2/15.
@@ -41,10 +43,12 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
      */
     public static final String IMAGE_URL = "image_url";
 
+    private ValueAnimator bgcAnim;
+
     private ImageAdapter adapter;
 
     private ConflictViewPager viewPager;
-    private CircleIndicator indicator;
+    protected CircleIndicator indicator;
     private PullBackLayout puller;
 
 
@@ -107,6 +111,7 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
         mHeight = dm.heightPixels; // 屏幕高（像素，如：px）
         initViewPager();
         initPuller();
+        animBackgroundTransform();
     }
 
     ////////////////////////////////////////////////////
@@ -114,8 +119,9 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
     ////////////////////////////////////////////////////
     private void initPuller() {
         puller = (PullBackLayout) findViewById(com.yy.www.libs.R.id.puller);
-        puller.setCallback(this);
-        puller.setBackgroundColor(Color.BLACK);
+        if (puller != null) {
+            puller.setCallback(this);
+        }
     }
 
 
@@ -134,9 +140,12 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
 
     }
 
+    private static final String TAG = "ImageZoomActivity";
+
     @Override
-    public void onPull(float progress) {
-        puller.setAlpha((int) (0xff * (1f - Math.abs(progress))));
+    public void onPull(float p) {
+        Log.e(TAG, "onPull : " + p);
+        setBackgroundColor(mColorEvaluator.evaluate(Math.abs(p), 0xff000000, 0x00000000));
     }
 
     @Override
@@ -237,5 +246,38 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
         }
     }
 
+    private void setBackgroundColor(int color) {
+        puller.setBackgroundColor(color);
+    }
+
+    /**
+     * 执行ImageWatcher自身的背景色渐变至期望值[colorResult]的动画
+     */
+    private void animBackgroundTransform() {
+        if (bgcAnim != null) bgcAnim.cancel();
+        bgcAnim = ValueAnimator.ofFloat(0, 1).setDuration(300);
+        bgcAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float p = (float) animation.getAnimatedValue();
+                setBackgroundColor(mColorEvaluator.evaluate(p, 0x00000000, 0xff000000));
+            }
+        });
+        bgcAnim.start();
+    }
+
+    final TypeEvaluator<Integer> mColorEvaluator = new TypeEvaluator<Integer>() {
+        @Override
+        public Integer evaluate(float fraction, Integer startValue, Integer endValue) {
+            int startColor = startValue;
+            int endColor = endValue;
+
+            int alpha = (int) (Color.alpha(startColor) + fraction * (Color.alpha(endColor) - Color.alpha(startColor)));
+            int red = (int) (Color.red(startColor) + fraction * (Color.red(endColor) - Color.red(startColor)));
+            int green = (int) (Color.green(startColor) + fraction * (Color.green(endColor) - Color.green(startColor)));
+            int blue = (int) (Color.blue(startColor) + fraction * (Color.blue(endColor) - Color.blue(startColor)));
+            return Color.argb(alpha, red, green, blue);
+        }
+    };
 
 }
