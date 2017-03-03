@@ -169,7 +169,7 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
         closeAct();
     }
 
-    private void closeAct() {
+    public void closeAct() {
         closeAct(0);
     }
 
@@ -178,8 +178,7 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
 
         int closePosition = viewPager.getCurrentItem();
         ImageBean closeImageBean = getImageBean(closePosition);
-        if (closeImageBean == null) {
-            closeImageBean = new ImageBean();
+        if (closeImageBean == null || closeImageBean.state == ImageBean.STATE_PLACEHOLDER) {
             closeImageBean.translationX = -100f;
             closeImageBean.translationY = -100f;
             closeImageBean.width = mWidth + 200f;
@@ -217,6 +216,10 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
         return thumbUrlList.get(startPosition);
     }
 
+    public boolean isStartPager() {
+        return viewPager.getCurrentItem() == startPosition;
+    }
+
 
     private class ImageAdapter extends FragmentStatePagerAdapter {
 
@@ -228,9 +231,7 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
         public Fragment getItem(int position) {
             Bundle arguments = new Bundle();
             //获取当前用户的基本信息 ；传递到下个页面，
-            if (position == startPosition) {
-                arguments.putParcelable("start_image", imageViewList.get(position));
-            }
+            arguments.putParcelable("start_image", imageViewList.get(position));
             arguments.putString("url", urlList.get(position));
             arguments.putString("thumbUrl", thumbUrlList.get(position));
 

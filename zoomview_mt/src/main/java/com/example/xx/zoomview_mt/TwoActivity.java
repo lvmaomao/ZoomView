@@ -78,6 +78,15 @@ public class TwoActivity extends AppCompatActivity {
         IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664925_2087.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647930_5139.jpg"));
         IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664777_5730.png", "http://img.my.csdn.net/uploads/201701/17/1484647929_8108.png"));
         IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647897_1978.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664940_9893.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647899_2806.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664940_3308.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647798_4500.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664927_3920.png", "http://img.my.csdn.net/uploads/201701/17/1484647897_1367.png"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664926_8360.png", "http://img.my.csdn.net/uploads/201701/17/1484650736_2101.png"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664926_6184.png", "http://img.my.csdn.net/uploads/201701/17/1484647701_9893.png"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664925_8382.png", "http://img.my.csdn.net/uploads/201701/17/1484650700_2514.png"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664925_2087.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647930_5139.jpg"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664777_5730.png", "http://img.my.csdn.net/uploads/201701/17/1484647929_8108.png"));
+        IMG_URL_LIST.add(new ZoomBean<>("http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jpg", "http://img.my.csdn.net/uploads/201701/17/1484647897_1978.jpg"));
 
         thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664940_9893.jpg");
         thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664940_3308.jpg");
@@ -88,7 +97,25 @@ public class TwoActivity extends AppCompatActivity {
         thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664925_2087.jpg");
         thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664777_5730.png");
         thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jpg");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664940_9893.jpg");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664940_3308.jpg");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664927_3920.png");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664926_8360.png");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664926_6184.png");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664925_8382.png");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664925_2087.jpg");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664777_5730.png");
+        thumbUrl.add("http://img.my.csdn.net/uploads/201701/06/1483664741_1378.jpg");
 
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647899_2806.jpg");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647798_4500.jpg");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647897_1367.png");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484650736_2101.png");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647701_9893.png");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484650700_2514.png");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647930_5139.jpg");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647929_8108.png");
+        url.add("http://img.my.csdn.net/uploads/201701/17/1484647897_1978.jpg");
         url.add("http://img.my.csdn.net/uploads/201701/17/1484647899_2806.jpg");
         url.add("http://img.my.csdn.net/uploads/201701/17/1484647798_4500.jpg");
         url.add("http://img.my.csdn.net/uploads/201701/17/1484647897_1367.png");
@@ -145,9 +172,9 @@ public class TwoActivity extends AppCompatActivity {
                 ImageView iv = (ImageView) itemView.findViewById(R.id.ivImg);
                 imageBeen.add(new ImageBean(iv));
                 Log.e("getIvs2", "getIvs2 not null : " + i);
-
             } else {
                 Log.e("getIvs2", "getIvs2 null : " + i);
+                imageBeen.add(new ImageBean());
             }
         }
 

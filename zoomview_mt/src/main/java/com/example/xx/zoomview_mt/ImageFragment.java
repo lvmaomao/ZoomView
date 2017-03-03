@@ -21,6 +21,8 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import uk.co.senab.photoview.PhotoView;
+
 
 /**
  * Created by yangyu on 2017/2/16.
@@ -41,11 +43,13 @@ public class ImageFragment extends Fragment {
      */
     private ValueAnimator animator = null;
 
+
     /**
      * views
      */
     private View rootView;
     private ImageView image;
+    private PhotoView imageBig;
     private ProgressBar progress;
 
     /**
@@ -61,16 +65,12 @@ public class ImageFragment extends Fragment {
 
     ImageZoomActivity activity;
 
+    private int statusBarHeight;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         activity = (ImageZoomActivity) context;
-    }
-
-    public static ImageFragment newInstance(Bundle args) {
-        ImageFragment fragment = new ImageFragment();
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Nullable
@@ -80,6 +80,7 @@ public class ImageFragment extends Fragment {
         DisplayMetrics dm = getResources().getDisplayMetrics();
         mWidth = dm.widthPixels; // 屏幕宽（像素，如：px）
         mHeight = dm.heightPixels; // 屏幕高（像素，如：px）
+        statusBarHeight = calcStatusBarHeight(activity);
         return rootView;
     }
 
@@ -88,31 +89,18 @@ public class ImageFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Log.e("ImageFragment", "onViewCreated");
         image = (ImageView) rootView.findViewById(R.id.image);
+        imageBig = (PhotoView) rootView.findViewById(R.id.imageBig);
         progress = (ProgressBar) rootView.findViewById(R.id.progress);
         getArgs();
-        //创建imageView位置与前页面相同
-        if (originImageBean != null) {
-            createImageView(originImageBean);
-            Picasso.with(getActivity())
-                    .load(thumbUrl)
-                    .into(image, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            beFullView();
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    });
-            Log.e(TAG, "originImageBean is not null");
-        } else {
-            Log.e(TAG, "originImageBean is null");
-        }
-        beFullView();
+        initThumbImage();
+        zoomThumbView();
     }
 
+    public static ImageFragment newInstance(Bundle args) {
+        ImageFragment fragment = new ImageFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     /**
      * 获取数据
@@ -122,7 +110,7 @@ public class ImageFragment extends Fragment {
         url = bundle.getString("url");
         thumbUrl = bundle.getString("thumbUrl");
         originImageBean = bundle.getParcelable("start_image");
-        if (originImageBean != null) {
+        if (originImageBean.state == ImageBean.STATE_NORMAL) {
             currentImageBean = originImageBean.clone();
         }
     }
@@ -133,10 +121,32 @@ public class ImageFragment extends Fragment {
         flp.height = (int) bean.height;
         image.setLayoutParams(flp);
         image.setTranslationX(bean.translationX);
-        image.setTranslationY(bean.translationY);
+        image.setTranslationY(bean.translationY - statusBarHeight);
     }
 
-    private void beFullView() {
+    /**
+     * 初始化缩略图
+     */
+    private void initThumbImage() {
+        if (originImageBean != null) {
+            createImageView(originImageBean);
+            Picasso.with(getActivity())
+                    .load(thumbUrl)
+                    .into(image, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            zoomThumbView();
+                        }
+
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+        }
+    }
+
+    private void zoomThumbView() {
         progress.setVisibility(View.VISIBLE);
         Picasso.with(getActivity())
                 .load(thumbUrl)
@@ -167,12 +177,17 @@ public class ImageFragment extends Fragment {
                         image.setImageBitmap(bitmap);
                         notifyItemChangedState(false, false);
 
-                        if (activity != null && originImageBean != null && !activity.isAnim && thumbUrl.equals(activity.getStartThumbUrl())) { //播放动画 达到指定大小
+                        if (activity != null && originImageBean != null && !activity.isAnim && activity.isStartPager()
+//                                thumbUrl.equals(activity.getStartThumbUrl())
+                                ) { //播放动画 达到指定大小
                             playAnim(originImageBean, targetImageBean, STATE_FULL);
                             activity.setAnim(true);
                         } else { //不播放动画,直接达到指定位置
                             createImageView(targetImageBean);
+                            changeImage();
                         }
+
+
                     }
 
                     @Override
@@ -187,27 +202,47 @@ public class ImageFragment extends Fragment {
 
     }
 
-
-    private void showHDImage() {
-        Picasso.with(getActivity())
+    /**
+     * 切换高清图
+     */
+    private void changeImage() {
+        Picasso.with(activity)
                 .load(url)
-                .into(new Target() {
+                .into(imageBig, new Callback() {
                     @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        image.setImageBitmap(bitmap);
-                        progress.setVisibility(View.GONE);
+                    public void onSuccess() {
+                        imageBig.setVisibility(View.VISIBLE);
+                        image.setVisibility(View.GONE);
                     }
 
                     @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                        image.setImageDrawable(errorDrawable);
-                    }
+                    public void onError() {
 
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        image.setImageDrawable(placeHolderDrawable);
                     }
                 });
+    }
+
+
+    private void showHDImage() {
+//        Picasso.with(getActivity())
+//                .load(url)
+//                .into(new Target() {
+//                    @Override
+//                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                        image.setImageBitmap(bitmap);
+//                        progress.setVisibility(View.GONE);
+//                    }
+//
+//                    @Override
+//                    public void onBitmapFailed(Drawable errorDrawable) {
+//                        image.setImageDrawable(errorDrawable);
+//                    }
+//
+//                    @Override
+//                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+//                        image.setImageDrawable(placeHolderDrawable);
+//                    }
+//                });
     }
 
 
@@ -238,13 +273,13 @@ public class ImageFragment extends Fragment {
      * 关闭方法
      */
     public void close(int currentTY, ImageBean imageBean) {
-//        if (currentImageBean == null && currentImageBean == null) {
-//            return;
-//        }
         //从 目标位置或者变化位置获取启动动画的初始位置
+        image.setVisibility(View.VISIBLE);
+        imageBig.setVisibility(View.GONE);
         ImageBean beforeImageBean = targetImageBean == null ? currentImageBean.clone() : targetImageBean.clone();
         //对 其实动画的位置进行y轴修正
         beforeImageBean.translationY += currentTY;
+        imageBean.translationY -= statusBarHeight;
         playAnim(beforeImageBean, imageBean, STATE_CLOSE);
     }
 
@@ -295,6 +330,7 @@ public class ImageFragment extends Fragment {
                         }
                         break;
                     case STATE_FULL:
+                        changeImage();
                         showHDImage();
                         break;
                     default:
@@ -314,6 +350,5 @@ public class ImageFragment extends Fragment {
         });
         animator.start();
     }
-
 
 }

@@ -10,6 +10,17 @@ import android.widget.ImageView;
  */
 
 public class ImageBean implements Parcelable, Cloneable {
+
+    /**
+     * 正常的图片状态是normal
+     */
+    public static final int STATE_NORMAL = 100;
+    /**
+     * 站位的图片信息
+     */
+    public static final int STATE_PLACEHOLDER = 200;
+
+
     float width;
     float height;
     float translationX;
@@ -17,11 +28,14 @@ public class ImageBean implements Parcelable, Cloneable {
     float scaleX = 1.0f;
     float scaleY = 1.0f;
     float alpha = 1.0f;
+    int state;
 
     public ImageBean() {
+        this.state = STATE_PLACEHOLDER;
     }
 
     public ImageBean(ImageView imageView) {
+        this.state = STATE_NORMAL;
         int[] location = new int[2];
         imageView.getLocationOnScreen(location);
         this.height = imageView.getHeight();
@@ -58,6 +72,8 @@ public class ImageBean implements Parcelable, Cloneable {
         dest.writeFloat(this.scaleX);
         dest.writeFloat(this.scaleY);
         dest.writeFloat(this.alpha);
+        dest.writeInt(this.state);
+
     }
 
 
@@ -69,6 +85,7 @@ public class ImageBean implements Parcelable, Cloneable {
         this.scaleX = in.readFloat();
         this.scaleY = in.readFloat();
         this.alpha = in.readFloat();
+        this.state = in.readInt();
     }
 
     public static final Parcelable.Creator<ImageBean> CREATOR = new Parcelable.Creator<ImageBean>() {
