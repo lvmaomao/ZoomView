@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,11 +16,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.example.xx.zoomview_mt.fragment.LazyFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 
 /**
@@ -29,7 +30,7 @@ import uk.co.senab.photoview.PhotoView;
  * 图片放大fragment
  */
 
-public class ImageFragment extends Fragment {
+public class ImageFragment extends LazyFragment implements PhotoViewAttacher.OnPhotoTapListener {
 
     public static final String TAG = "ImageFragment";
 
@@ -63,6 +64,9 @@ public class ImageFragment extends Fragment {
     private int mWidth;
     private int mHeight;
 
+    // 标志位，标志已经初始化完成。
+    private boolean isPrepared;
+
     ImageZoomActivity activity;
 
     private int statusBarHeight;
@@ -81,6 +85,7 @@ public class ImageFragment extends Fragment {
         mWidth = dm.widthPixels; // 屏幕宽（像素，如：px）
         mHeight = dm.heightPixels; // 屏幕高（像素，如：px）
         statusBarHeight = calcStatusBarHeight(activity);
+        isPrepared = true;
         return rootView;
     }
 
@@ -91,9 +96,18 @@ public class ImageFragment extends Fragment {
         image = (ImageView) rootView.findViewById(R.id.image);
         imageBig = (PhotoView) rootView.findViewById(R.id.imageBig);
         progress = (ProgressBar) rootView.findViewById(R.id.progress);
+        imageBig.setOnPhotoTapListener(this);
         getArgs();
+        lazyLoad();
+    }
+
+    @Override
+    protected void lazyLoad() {
+        if (!isPrepared || !isVisible) {
+            return;
+        }
+        //填充各控件的数据
         initThumbImage();
-        zoomThumbView();
     }
 
     public static ImageFragment newInstance(Bundle args) {
@@ -122,12 +136,15 @@ public class ImageFragment extends Fragment {
         image.setLayoutParams(flp);
         image.setTranslationX(bean.translationX);
         image.setTranslationY(bean.translationY - statusBarHeight);
+        imageBig.setTranslationY(statusBarHeight / 2);
+
     }
 
     /**
      * 初始化缩略图
      */
     private void initThumbImage() {
+        progress.setVisibility(View.VISIBLE);
         if (originImageBean != null) {
             createImageView(originImageBean);
             Picasso.with(getActivity())
@@ -147,7 +164,6 @@ public class ImageFragment extends Fragment {
     }
 
     private void zoomThumbView() {
-        progress.setVisibility(View.VISIBLE);
         Picasso.with(getActivity())
                 .load(thumbUrl)
                 .into(new Target() {
@@ -176,7 +192,6 @@ public class ImageFragment extends Fragment {
                         }
                         image.setImageBitmap(bitmap);
                         notifyItemChangedState(false, false);
-
                         if (activity != null && originImageBean != null && !activity.isAnim && activity.isStartPager()
 //                                thumbUrl.equals(activity.getStartThumbUrl())
                                 ) { //播放动画 达到指定大小
@@ -186,7 +201,6 @@ public class ImageFragment extends Fragment {
                             createImageView(targetImageBean);
                             changeImage();
                         }
-
 
                     }
 
@@ -222,31 +236,8 @@ public class ImageFragment extends Fragment {
                 });
     }
 
-
-    private void showHDImage() {
-//        Picasso.with(getActivity())
-//                .load(url)
-//                .into(new Target() {
-//                    @Override
-//                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//                        image.setImageBitmap(bitmap);
-//                        progress.setVisibility(View.GONE);
-//                    }
-//
-//                    @Override
-//                    public void onBitmapFailed(Drawable errorDrawable) {
-//                        image.setImageDrawable(errorDrawable);
-//                    }
-//
-//                    @Override
-//                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-//                        image.setImageDrawable(placeHolderDrawable);
-//                    }
-//                });
-    }
-
-
     void notifyItemChangedState(boolean loading, boolean error) {
+
         if (loading) {
             progress.setVisibility(View.VISIBLE);
         } else {
@@ -283,7 +274,7 @@ public class ImageFragment extends Fragment {
         playAnim(beforeImageBean, imageBean, STATE_CLOSE);
     }
 
-    private void playAnim(final ImageBean before, final ImageBean after, final int state) {
+    private synchronized void playAnim(final ImageBean before, final ImageBean after, final int state) {
         if (animator != null) {
             animator.cancel();
         }
@@ -331,7 +322,6 @@ public class ImageFragment extends Fragment {
                         break;
                     case STATE_FULL:
                         changeImage();
-                        showHDImage();
                         break;
                     default:
                         break;
@@ -351,4 +341,10 @@ public class ImageFragment extends Fragment {
         animator.start();
     }
 
+    @Override
+    public void onPhotoTap(View view, float x, float y) {
+        if (activity != null) {
+            activity.closeAct();
+        }
+    }
 }

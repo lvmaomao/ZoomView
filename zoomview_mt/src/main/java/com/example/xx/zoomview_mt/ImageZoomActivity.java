@@ -165,7 +165,6 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         closeAct();
     }
 
@@ -191,7 +190,7 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
     /**
      * 获取 当前的imageBean
      *
-     * @param position 当前的postion
+     * @param position 当前的position
      * @return ImageBean
      * @throws Exception 数组越界
      */
@@ -243,6 +242,7 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
 
         @Override
         public int getCount() {
+//            return 1;
             return urlList.size();
         }
     }
