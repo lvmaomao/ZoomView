@@ -1,4 +1,4 @@
-package com.example.xx.zoomview_mt;
+package com.yy.www.libs.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -21,14 +21,14 @@ public class ImageBean implements Parcelable, Cloneable {
     public static final int STATE_PLACEHOLDER = 200;
 
 
-    float width;
-    float height;
-    float translationX;
-    float translationY;
-    float scaleX = 1.0f;
-    float scaleY = 1.0f;
-    float alpha = 1.0f;
-    int state;
+    public float width;
+    public float height;
+    public float translationX;
+    public float translationY;
+    public float scaleX = 1.0f;
+    public float scaleY = 1.0f;
+    public float alpha = 1.0f;
+    public int state;
 
     public ImageBean() {
         this.state = STATE_PLACEHOLDER;
@@ -88,7 +88,7 @@ public class ImageBean implements Parcelable, Cloneable {
         this.state = in.readInt();
     }
 
-    public static final Parcelable.Creator<ImageBean> CREATOR = new Parcelable.Creator<ImageBean>() {
+    public static final Creator<ImageBean> CREATOR = new Creator<ImageBean>() {
         @Override
         public ImageBean createFromParcel(Parcel source) {
             return new ImageBean(source);

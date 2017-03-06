@@ -8,14 +8,16 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.yy.www.libs.ImageZoomActivity;
+import com.yy.www.libs.bean.ImageBean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.xx.zoomview_mt.ImageZoomActivity.IMAGE_THUMB_URL;
-import static com.example.xx.zoomview_mt.ImageZoomActivity.IMAGE_URL;
-import static com.example.xx.zoomview_mt.ImageZoomActivity.IMAGE_VIEWS;
+import static com.yy.www.libs.ImageZoomActivity.IMAGE_THUMB_URL;
+import static com.yy.www.libs.ImageZoomActivity.IMAGE_URL;
+import static com.yy.www.libs.ImageZoomActivity.IMAGE_VIEWS;
 
 /**
  * Created by xx on 2016/9/11.

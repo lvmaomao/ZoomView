@@ -5,6 +5,11 @@
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true">
+        <activity
+            android:name=".ImageZoomActivity"
+
+            android:theme="@style/AppTheme.Transparent" />
+
     </application>
 
 </manifest>

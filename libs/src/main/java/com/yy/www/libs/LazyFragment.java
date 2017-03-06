@@ -1,4 +1,4 @@
-package com.example.xx.zoomview_mt.fragment;
+package com.yy.www.libs;
 
 import android.support.v4.app.Fragment;
 

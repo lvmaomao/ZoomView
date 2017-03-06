@@ -1,4 +1,4 @@
-package com.example.xx.zoomview_mt;
+package com.yy.www.libs;
 
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
@@ -13,8 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import com.yy.www.libs.widget.ConflictViewPager;
-import com.yy.www.libs.widget.PullBackLayout;
+import com.yy.www.libs.bean.ImageBean;
 
 import java.util.List;
 
@@ -25,7 +24,7 @@ import me.relex.circleindicator.CircleIndicator;
  * 图片放大的Activity
  */
 
-public class ImageZoomActivity extends AppCompatActivity implements PullBackLayout.Callback {
+public class ImageZoomActivity extends AppCompatActivity implements com.yy.www.libs.widget.PullBackLayout.Callback {
     /**
      * 上个页面的imageView集合
      */
@@ -47,9 +46,9 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
 
     private ImageAdapter adapter;
 
-    private ConflictViewPager viewPager;
+    private com.yy.www.libs.widget.ConflictViewPager viewPager;
     protected CircleIndicator indicator;
-    private PullBackLayout puller;
+    private com.yy.www.libs.widget.PullBackLayout puller;
 
 
     private List<ImageBean> imageViewList;  // imageView引用集合 传递方需要控制数量。
@@ -118,7 +117,7 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
     //// Puller start
     ////////////////////////////////////////////////////
     private void initPuller() {
-        puller = (PullBackLayout) findViewById(com.yy.www.libs.R.id.puller);
+        puller = (com.yy.www.libs.widget.PullBackLayout) findViewById(com.yy.www.libs.R.id.puller);
         if (puller != null) {
             puller.setCallback(this);
         }
@@ -127,7 +126,7 @@ public class ImageZoomActivity extends AppCompatActivity implements PullBackLayo
 
     private void initViewPager() {
         adapter = new ImageAdapter();
-        viewPager = (ConflictViewPager) findViewById(R.id.viewPager);
+        viewPager = (com.yy.www.libs.widget.ConflictViewPager) findViewById(R.id.viewPager);
         indicator = (CircleIndicator) findViewById(com.yy.www.libs.R.id.indicator);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(0);
